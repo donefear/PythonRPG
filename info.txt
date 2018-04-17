@@ -1,0 +1,12 @@
+CHARACTERS :
+Name
+Level
+Exp
+HP
+MAX HP
+
+Attributes:
+STR
+INT
+DEX
+CONST
