@@ -4,6 +4,7 @@ from discord.ext import commands
 import asyncio
 import mysql.connector
 import time
+import random
 from time import gmtime, strftime
 cdate = strftime("GMT %m/%d/%Y", gmtime())
 Client = discord.Client()
@@ -12,7 +13,7 @@ bot.get_all_emojis()
 user = discord.User()
 
 #Connecting to DB
-cnx = mysql.connector.connect(user='bot', password='potato',host='127.0.0.1',database='test')
+cnx = mysql.connector.connect(user='bot', password='potato',host='127.0.0.1',database='rpg')
 cursor = cnx.cursor()
 
 
@@ -28,6 +29,7 @@ async def on_ready():
 	print('Connected!')
 	print('Username: ' + bot.user.name)
 	print('ID: ' + bot.user.id)
+	print('---------------------------------------')
 
 
 #on recieve msg in discord
@@ -38,6 +40,39 @@ async def on_message(message):
 
 	if message.content == "$create":
 		await bot.send_message(message.channel, "Character being created...")
+		Const = random.randint(1, 10)
+		Str = random.randint(1, 10)
+		Intel = random.randint(1, 10)
+		Dex = random.randint(1, 10)
+		Name = str(message.author)
+		Level = 1
+		Exp = 0 
+		MaxHp = 10+Const*Level
+		Hp = MaxHp
+
+		
+		add_employee = ("INSERT INTO employees ""(first_name, last_name, hire_date, gender, birth_date) ""VALUES (%s, %s, %s, %s, %s)")
+		data_employee = ('Geert', 'Vanderkelen', tomorrow, 'M', date(1977, 6, 14))
+
+		# Insert new employee
+		cursor.execute(add_employee, data_employee)
+		# Insert salary information
+		cursor.execute(add_salary, data_salary)
+
+
+
+		await bot.send_message(message.channel, "DEBUGG:::: Name = %s | Level: %s | Exp: %s | Hp: %s | MaxHp: %s ; Const: %s | Str: %s | Intel: %s | Dex: %s" % (Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex))
+		add_data = ("INSERT INTO stats""(Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex)""VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)")
+		Data = (Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex)
+		print(add_data, Data)
+		print(Data)
+		cursor.execute(add_data, Data)		
+		cnx.commit()
+
+	if message.content == "$info":
+		query = ("SELECT * FROM stats " "WHERE Name = %s")
+		name = str(message.author)
+		cursor.execute(query, name)
 
 	if message.content.upper() == "POOP":
 		await bot.send_message(message.channel, ":poop:")
@@ -82,7 +117,6 @@ async def on_message(message):
 		await bot.edit_message(msg,new_content=newmsg)
 		await asyncio.sleep(1)
 		await bot.send_message(message.channel, "ERROR no fucks found")
-		
 
 	if message.content == "time":
 		await bot.send_message(message.channel, "%s" % (cdate))
@@ -128,43 +162,48 @@ async def on_message(message):
 			targetid = mentions[0]
 			mentionsraw = message.raw_mentions
 			target = mentionsraw[0]
-			text = ("@%s Challenged %s please react to this message with :+1: or :-1: respectively for accepting or denying the duel" % (challenger,args[1]))
-			msg = await bot.send_message(message.channel, text)
+			print(target)
+			if target != "432953678840725515":
+				text = ("@%s Challenged %s please react to this message with :+1: or :-1: respectively for accepting or denying the duel" % (challenger,args[1]))
+				msg = await bot.send_message(message.channel, text)
 
-			for n in range(100):
-				def check(reaction, user):
-					e = str(reaction.emoji)
-					return e.startswith(('👍', '👎'))
+				for n in range(100):
+					def check(reaction, user):
+						e = str(reaction.emoji)
+						return e.startswith(('👍', '👎'))
 
-				res = await bot.wait_for_reaction(message=msg, check=check)
-				#await bot.send_message(message.channel, '{0.user} reacted with {0.reaction.emoji}!'.format(res))
-				emoji = "{0.reaction.emoji}".format(res)
-				emojiuser = "{0.user}".format(res)
-				#await bot.send_message(message.channel,"DEBUG:emojiuser vs targetid: emojiuser : %s | target : %s " %  (emojiuser,targetid))
-				print(emojiuser)
-				print(targetid)
+					res = await bot.wait_for_reaction(message=msg, check=check)
+					#await bot.send_message(message.channel, '{0.user} reacted with {0.reaction.emoji}!'.format(res))
+					emoji = "{0.reaction.emoji}".format(res)
+					emojiuser = "{0.user}".format(res)
+					#await bot.send_message(message.channel,"DEBUG:emojiuser vs targetid: emojiuser : %s | target : %s " %  (emojiuser,targetid))
+					print(emojiuser)
+					print(targetid)
 
 
-				if str(emojiuser) == str(targetid):
-					if emoji == "👍":
-						newmsg = "challenge accepted"
-						# await bot.send_message(message.channel,":+1: Accepted")
-						await bot.edit_message(msg,new_content=newmsg)
-						await duel(message,challenger,target)
-					elif emoji == "👎":
-						newmsg = "challenge DENIED"
-						# await bot.send_message(message.channel,":-1: DENIED")
-						await bot.edit_message(msg,new_content=newmsg)
-					break
-				else:
-					async def clear(msg2):
-						print("waiting 2 sec")
-						await asyncio.sleep(2)
-						print("deleting msg")
-						await bot.delete_message(msg2)
-					msg2 = await bot.send_message(message.channel, "@%s you were not challenged why you response to this ......:unamused: " % (emojiuser))
-					await bot.clear_reactions(message=msg)
-					await clear(msg2)
+					if str(emojiuser) == str(targetid):
+						if emoji == "👍":
+							newmsg = "challenge accepted"
+							# await bot.send_message(message.channel,":+1: Accepted")
+							await bot.edit_message(msg,new_content=newmsg)
+							await duel(message,challenger,target)
+						elif emoji == "👎":
+							newmsg = "challenge DENIED"
+							# await bot.send_message(message.channel,":-1: DENIED")
+							await bot.edit_message(msg,new_content=newmsg)
+						break
+					else:
+						async def clear(msg2):
+							print("waiting 2 sec")
+							await asyncio.sleep(2)
+							print("deleting msg")
+							await bot.delete_message(msg2)
+						msg2 = await bot.send_message(message.channel, "@%s you were not challenged why you response to this ......:unamused: " % (emojiuser))
+						await bot.clear_reactions(message=msg)
+						await clear(msg2)
+			else:
+				await bot.send_message(message.channel, "I'm allmighty you can't duel me")
+				active = 0
 
 
 
