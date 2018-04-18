@@ -15,6 +15,7 @@ async def duel(message,challenger,target,channelid,bot):
 	cursor.execute(sqlA)		
 	# Fetch all the rows in a list of lists.
 	AttackerData = cursor.fetchall()	
+	countA = cursor.rowcount	
 	for row in AttackerData:
 		AID = row[0]
 		AName = row[1]
@@ -31,6 +32,7 @@ async def duel(message,challenger,target,channelid,bot):
 	cursor.execute(sqlD)	
 	# Fetch all the rows in a list of lists.
 	DefenderData = cursor.fetchall()
+	countD = cursor.rowcount
 	for row in DefenderData:
 		DID = row[0]
 		DName = row[1]
@@ -42,41 +44,46 @@ async def duel(message,challenger,target,channelid,bot):
 		DStr = row[7]
 		DIntel = row[8]
 		DDex = row[9]	
-
-	await asyncio.sleep(2)
-	AInfo = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
-	DInfo = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
-
-
-	coinwinner = random.randint(0,1)
-	if coinwinner == 0:
-		await bot.send_message(channelid, "Winner of the CoinFlip is %s they get the first strike" % (AName))
+	if countA == 0 :
+		await bot.send_message(channelid," @%s ERROR : No character found please make a character with the '$create' command" % (challenger))
+	elif countD == 0 :
+		await bot.send_message(channelid," @%s ERROR : No character found please make a character with the '$create' command" % (target))
 	else:
-		await bot.send_message(channelid, "Winner of the CoinFlip is %s they get the first strike" % (DName))
-	msg  = await bot.send_message(channelid, "%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName,AHp , DName, DHp))
-	n = 1
-	while AHp >= 0 & DHp >=0 :	
-			
-		if coinwinner == 0 :
-			AHp = combat(AInfo , DInfo)
-			coinwinner = 1
-			AInfo = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
-			n = n+1
+
+		await asyncio.sleep(2)
+		AInfo = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
+		DInfo = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
+
+
+		coinwinner = random.randint(0,1)
+		if coinwinner == 0:
+			await bot.send_message(channelid, "Winner of the CoinFlip is %s they get the first strike" % (AName))
 		else:
-			DHp = combat(DInfo , AInfo)
-			coinwinner = 0
-			DInfo = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
-			n = n+1
-		await asyncio.sleep(1)
-		await bot.edit_message(msg,new_content="%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName,AHp , DName, DHp))
-		print(n)
-	if AHp <=0 :
-		winner = DName
-		exp(DInfo,AInfo)
-	else:
-		winner = AName
-		exp(AInfo,DInfo)
-	return winner ,AInfo ,DInfo
+			await bot.send_message(channelid, "Winner of the CoinFlip is %s they get the first strike" % (DName))
+		msg  = await bot.send_message(channelid, "%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName,AHp , DName, DHp))
+		n = 1
+		while AHp >= 0 & DHp >=0 :	
+				
+			if coinwinner == 0 :
+				AHp = combat(AInfo , DInfo)
+				coinwinner = 1
+				AInfo = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
+				n = n+1
+			else:
+				DHp = combat(DInfo , AInfo)
+				coinwinner = 0
+				DInfo = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
+				n = n+1
+			await asyncio.sleep(1)
+			await bot.edit_message(msg,new_content="%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName,AHp , DName, DHp))
+			print(n)
+		if AHp <=0 :
+			winner = DName
+			exp(DInfo,AInfo)
+		else:
+			winner = AName
+			exp(AInfo,DInfo)
+		return winner ,AInfo ,DInfo
 
 def combat(AInfo , DInfo):
 	AStr = AInfo[6]
