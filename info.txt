@@ -15,7 +15,7 @@ CONST
 await client.send_message(message.channel, "DEBUGG:::: Name = %s | Level: %s | Exp: %s | Hp: %s | MaxHp: %s ; Const: %s | Str: %s | Int: %s | Dex: %s" % (Name,Level,Exp,Hp,MaxHp,Const,Str,Int,Dex))
 		
 CREATE TABLE stats (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, 
-name VARCHAR(20),
+Name VARCHAR(20),
 Level INT(30),
 Exp INT(22), 
 Hp INT(22), 
@@ -24,3 +24,13 @@ Const INT(22),
 Str INT(22), 
 Intel INT(22), 
 Dex INT(22));
+TheFlyingCrocodile#1618
+
+
+
+attack  = Str attacker + 1d6 - Dex defender
+
+Exp awarding : 
+max exp = 100
+Level = round(exp/100)+1
+

@@ -5,6 +5,8 @@ import asyncio
 import mysql.connector
 import time
 import random
+import functions
+import sys
 from time import gmtime, strftime
 cdate = strftime("GMT %m/%d/%Y", gmtime())
 Client = discord.Client()
@@ -13,14 +15,8 @@ bot.get_all_emojis()
 user = discord.User()
 
 #Connecting to DB
-cnx = mysql.connector.connect(user='bot', password='potato',host='127.0.0.1',database='rpg')
+cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
 cursor = cnx.cursor()
-
-
-#on duel
-async def duel(message,challenger,target):
-	print("FIGHT")
-	winner = await bot.send_message(message.channel,"⚔EVERYONE LOSES⚔")
 
 
 #on startup of bot in console
@@ -29,7 +25,7 @@ async def on_ready():
 	print('Connected!')
 	print('Username: ' + bot.user.name)
 	print('ID: ' + bot.user.id)
-	print('---------------------------------------')
+	print('----------------------------------------')
 
 
 #on recieve msg in discord
@@ -39,41 +35,56 @@ async def on_message(message):
 		await bot.send_message(message.channel, "THE WORLD IS GOING TO DIE DIE DIE")
 
 	if message.content == "$create":
-		await bot.send_message(message.channel, "Character being created...")
-		Const = random.randint(1, 10)
-		Str = random.randint(1, 10)
-		Intel = random.randint(1, 10)
-		Dex = random.randint(1, 10)
 		Name = str(message.author)
-		Level = 1
-		Exp = 0 
-		MaxHp = 10+Const*Level
-		Hp = MaxHp
-
-		
-		add_employee = ("INSERT INTO employees ""(first_name, last_name, hire_date, gender, birth_date) ""VALUES (%s, %s, %s, %s, %s)")
-		data_employee = ('Geert', 'Vanderkelen', tomorrow, 'M', date(1977, 6, 14))
-
-		# Insert new employee
-		cursor.execute(add_employee, data_employee)
-		# Insert salary information
-		cursor.execute(add_salary, data_salary)
-
-
-
-		await bot.send_message(message.channel, "DEBUGG:::: Name = %s | Level: %s | Exp: %s | Hp: %s | MaxHp: %s ; Const: %s | Str: %s | Intel: %s | Dex: %s" % (Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex))
-		add_data = ("INSERT INTO stats""(Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex)""VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)")
-		Data = (Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex)
-		print(add_data, Data)
-		print(Data)
-		cursor.execute(add_data, Data)		
-		cnx.commit()
+		sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
+		cursor.execute(sql)
+		results = cursor.fetchall()	
+		count = cursor.rowcount		
+		if count == 0:
+			await bot.send_message(message.channel, "Character being created...")
+			Const = random.randint(1, 10)
+			Str = random.randint(1, 10)
+			Intel = random.randint(1, 10)
+			Dex = random.randint(1, 10)		
+			Level = 1
+			Exp = 0 
+			MaxHp = 10+Const*Level
+			Hp = MaxHp
+			add_data = ("INSERT INTO stats (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex) ""VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)")
+			Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)
+			await bot.send_message(message.channel, "You're stats are = Name = %s | Level: %s | Exp: %s | Hp: %s | MaxHp: %s ; Const: %s | Str: %s | Intel: %s | Dex: %s" % (Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex))
+			print(add_data, Data)
+			print(Data)
+			cursor.execute(add_data, Data)
+			cnx.commit()
+		else:
+			await bot.send_message(message.channel,"Character already created ! use $info")			
 
 	if message.content == "$info":
-		query = ("SELECT * FROM stats " "WHERE Name = %s")
 		name = str(message.author)
-		cursor.execute(query, name)
-
+		sql = "SELECT * FROM stats "" WHERE name = '%s'" % (name)		
+		cursor.execute(sql)		
+		# Fetch all the rows in a list of lists.
+		results = cursor.fetchall()
+		count = cursor.rowcount
+		print(count)
+		if count == 0:
+			await bot.send_message(message.channel,"No character created ! use $create")	
+		else:
+			for row in results:
+				ID = row[0]
+				Name = row[1]
+				Level = row[2]
+				Exp = row[3]
+				Hp = row[4]
+				MaxHp = row[5]
+				Const = row[6]
+				Str = row[7]
+				Intel = row[8]
+				Dex = row[9]
+				# Now print fetched result
+				await bot.send_message(message.channel, "Name = %s,Level = %s,Exp = %d,Hp = %s,MaxHp = %s,Const = %s,Str = %s,Intel = %s,Dex = %s" % (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex))	
+	
 	if message.content.upper() == "POOP":
 		await bot.send_message(message.channel, ":poop:")
 
@@ -186,7 +197,12 @@ async def on_message(message):
 							newmsg = "challenge accepted"
 							# await bot.send_message(message.channel,":+1: Accepted")
 							await bot.edit_message(msg,new_content=newmsg)
-							await duel(message,challenger,target)
+							winner ,AInfo ,DInfo = await functions.duel(message,challenger,target)
+							await bot.send_message(message.channel, winner)
+							await bot.send_message(message.channel, " Attacker info Name = %s | Level = %s | Exp = %d | Hp = %s | MaxHp = %s | Const = %s | Str = %s | Intel = %s | Dex = %s" % AInfo)	
+							await bot.send_message(message.channel, " Deffender info Name = %s | Level = %s | Exp = %d | Hp = %s | MaxHp = %s | Const = %s | Str = %s | Intel = %s | Dex = %s" % DInfo)	
+
+
 						elif emoji == "👎":
 							newmsg = "challenge DENIED"
 							# await bot.send_message(message.channel,":-1: DENIED")
@@ -204,7 +220,6 @@ async def on_message(message):
 			else:
 				await bot.send_message(message.channel, "I'm allmighty you can't duel me")
 				active = 0
-
 
 
 	if message.content.startswith("$purge"):
@@ -241,5 +256,6 @@ async def on_message(message):
 		# 	bot.clear_reactions(message=msg)
 
 
-cnx.close()
+
 bot.run("NDMyOTUzNjc4ODQwNzI1NTE1.Da1ANQ.TRV7uagT0Q0NhPCvKafsQ4VJ7xA")
+cnx.close()
