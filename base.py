@@ -19,6 +19,15 @@ cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host=
 cursor = cnx.cursor()
 
 
+
+ScriptName = "Text-Based RPG game for Discord"
+Website = "https://discord.gg/rm5Mbyu"
+Description = "......"
+Creator = "@DoneFear & @BoySanic"
+Version = "2.0.0.0"
+
+
+
 #on startup of bot in console
 @bot.event
 async def on_ready():
@@ -89,7 +98,7 @@ async def on_message(message):
 		await bot.send_message(message.channel, ":poop:")
 
 	if message.content.upper() == "PANDA":
-		await bot.send_message(message.channel, ":DonefearHugg:")
+		await bot.send_message(message.channel, "<:DonefearHugg:294457783557029899>")
 
 	if message.content == "$fucks":
 		text = "00% ▒▒▒▒▒▒▒▒▒▒"
@@ -197,11 +206,8 @@ async def on_message(message):
 							newmsg = "challenge accepted"
 							# await bot.send_message(message.channel,":+1: Accepted")
 							await bot.edit_message(msg,new_content=newmsg)
-							winner ,AInfo ,DInfo = await functions.duel(message,challenger,target)
-							await bot.send_message(message.channel, winner)
-							await bot.send_message(message.channel, " Attacker info Name = %s | Level = %s | Exp = %d | Hp = %s | MaxHp = %s | Const = %s | Str = %s | Intel = %s | Dex = %s" % AInfo)	
-							await bot.send_message(message.channel, " Deffender info Name = %s | Level = %s | Exp = %d | Hp = %s | MaxHp = %s | Const = %s | Str = %s | Intel = %s | Dex = %s" % DInfo)	
-
+							winner ,AInfo ,DInfo = await functions.duel(message,challenger,targetid,message.channel,bot)
+							await bot.send_message(message.channel,"The winner was @%s" % winner)
 
 						elif emoji == "👎":
 							newmsg = "challenge DENIED"
