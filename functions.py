@@ -9,95 +9,109 @@ cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host=
 cursor = cnx.cursor()
 
 async def duel(message,challenger,target,channelid,bot):
-	print(str(challenger) + str(target))
-	print("FIGHT")
-	sqlA = "SELECT * FROM stats "" WHERE name = '%s'" % (challenger)		
-	cursor.execute(sqlA)		
-	# Fetch all the rows in a list of lists.
-	AttackerData = cursor.fetchall()	
-	countA = cursor.rowcount	
-	for row in AttackerData:
-		AID = row[0]
-		AName = row[1]
-		ALevel = row[2]
-		AExp = row[3]
-		AHp = row[4]
-		AMaxHp = row[5]
-		AConst = row[6]
-		AStr = row[7]
-		AIntel = row[8]
-		ADex = row[9]
-
-	sqlD = "SELECT * FROM stats "" WHERE name = '%s'" % (target)
-	cursor.execute(sqlD)	
-	# Fetch all the rows in a list of lists.
-	DefenderData = cursor.fetchall()
-	countD = cursor.rowcount
-	for row in DefenderData:
-		DID = row[0]
-		DName = row[1]
-		DLevel = row[2]
-		DExp = row[3]
-		DHp = row[4]
-		DMaxHp = row[5]
-		DConst = row[6]
-		DStr = row[7]
-		DIntel = row[8]
-		DDex = row[9]	
-	if countA == 0 :
-		await bot.send_message(channelid," @%s ERROR : No character found please make a character with the '$create' command" % (challenger))
-	elif countD == 0 :
-		await bot.send_message(channelid," @%s ERROR : No character found please make a character with the '$create' command" % (target))
+	if str(target) == str(challenger):
+		await bot.send_message(channelid, "FUCK YOU CHEATER GO SELF HARM SOMEWHERE ELSE")
 	else:
+		cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
+		cursor = cnx.cursor()
+		print(str(challenger) + str(target))
+		print("FIGHT")
+		sqlA = "SELECT * FROM stats "" WHERE name = '%s'" % (challenger)		
+		cursor.execute(sqlA)		
+		# Fetch all the rows in a list of lists.
+		AttackerData = cursor.fetchall()	
+		countA = cursor.rowcount	
+		for row in AttackerData:
+			AID = row[0]
+			AName = row[1]
+			ALevel = row[2]
+			AExp = row[3]
+			AHp = row[4]
+			AMaxHp = row[5]
+			AConst = row[6]
+			AStr = row[7]
+			AIntel = row[8]
+			ADex = row[9]
 
-		await asyncio.sleep(2)
-		AInfo = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
-		DInfo = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
-
-
-		coinwinner = random.randint(0,1)
-		if coinwinner == 0:
-			await bot.send_message(channelid, "Winner of the CoinFlip is %s they get the first strike" % (AName))
+		sqlD = "SELECT * FROM stats "" WHERE name = '%s'" % (target)
+		cursor.execute(sqlD)	
+		# Fetch all the rows in a list of lists.
+		DefenderData = cursor.fetchall()
+		countD = cursor.rowcount
+		for row in DefenderData:
+			DID = row[0]
+			DName = row[1]
+			DLevel = row[2]
+			DExp = row[3]
+			DHp = row[4]
+			DMaxHp = row[5]
+			DConst = row[6]
+			DStr = row[7]
+			DIntel = row[8]
+			DDex = row[9]	
+		print(DefenderData)
+		print(countD)
+		if countA == 0 :
+			await bot.send_message(channelid," @%s ERROR : No character found please make a character with the '$create' command" % (challenger))
+		elif countD == 0 :
+			await bot.send_message(channelid," @%s ERROR : No character found please make a character with the '$create' command" % (target))
 		else:
-			await bot.send_message(channelid, "Winner of the CoinFlip is %s they get the first strike" % (DName))
-		msg  = await bot.send_message(channelid, "%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName,AHp , DName, DHp))
-		n = 1
-		while AHp >= 0 & DHp >=0 :	
-				
-			if coinwinner == 0 :
-				AHp = combat(AInfo , DInfo)
-				coinwinner = 1
-				AInfo = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
-				n = n+1
+
+			await asyncio.sleep(2)
+			AInfo = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
+			DInfo = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
+
+
+			coinwinner = random.randint(0,1)
+			if coinwinner == 0:
+				await bot.send_message(channelid, "Winner of the CoinFlip is %s they get the first strike" % (AName))
 			else:
-				DHp = combat(DInfo , AInfo)
-				coinwinner = 0
-				DInfo = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
-				n = n+1
-			await asyncio.sleep(1)
-			await bot.edit_message(msg,new_content="%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName,AHp , DName, DHp))
-			print(n)
-		if AHp <=0 :
-			winner = DName
-			exp(DInfo,AInfo)
-		else:
-			winner = AName
-			exp(AInfo,DInfo)
+				await bot.send_message(channelid, "Winner of the CoinFlip is %s they get the first strike" % (DName))
+			msg  = await bot.send_message(channelid, "%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName,AHp , DName, DHp))
+			n = 1
+			print("AHP : %s  DHP : %s" % (AHp,DHp))
+			while AHp >= 0 and DHp >= 0 :	
+					
+				if coinwinner == 0 :
+					DHp = combat(AInfo , DInfo)
+					coinwinner = 1
+					DInfo = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
+					n = n+1
+				else:
+					AHp = combat(DInfo , AInfo)
+					coinwinner = 0
+					AInfo = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)				
+					n = n+1
+				await asyncio.sleep(1)
+				await bot.edit_message(msg,new_content="%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName,AHp , DName, DHp))
+				print(n)
+			if AHp <=0 :
+				winner = DName
+				exp(DInfo,AInfo)
+			else:
+				winner = AName
+				exp(AInfo,DInfo)
 		return winner ,AInfo ,DInfo
 
+
 def combat(AInfo , DInfo):
+	AName = AInfo[0]
 	AStr = AInfo[6]
 	DDex = DInfo[8]
 	DHp = DInfo[3]
+	DName = DInfo[0]
 	Dice = random.randint(1, 6)
-	DMG = (AStr + Dice) - DDex
+	DMG = (AStr + Dice) - round(DDex*0.5)
 	if DMG <=0:
 		DMG = 0
-	print("dmg"+str(DMG))
+	print("%s did %s dmg" % (AName,DMG))
 	DHp -= DMG
+	print("%s HP = %s" % (DName,DHp))
 	return DHp
 
 def exp(W,L):
+	cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
+	cursor = cnx.cursor()
 	WExp = W[2]
 	LExp = L[2]
 	WName = W[0]
@@ -108,8 +122,10 @@ def exp(W,L):
 	sqlW = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (WExp,WName)
 	print(sqlW)
 	cursor.execute(sqlW)
+	cnx.commit()
 	sqlL = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (LExp,LName)
 	print(sqlL)
 	cursor.execute(sqlL)
 	cnx.commit()
+	cnx.close()
 
