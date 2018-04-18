@@ -34,3 +34,15 @@ Exp awarding :
 max exp = 100
 Level = round(exp/100)+1
 
+exp gain :
+	win = random.randint(9, 11)
+	lose = random.randint(4, 6)
+
+
+
+while hp >=0
+	a = 0
+	if a == 1
+	then attack vs defender
+	else
+	defender vs atacker
