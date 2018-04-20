@@ -87,10 +87,14 @@ async def duel(message,challenger,target,channelid,bot):
 				print(n)
 			if AHp <=0 :
 				winner = DName
-				exp(DInfo,AInfo)
+				loser = AName
+				exp(winner, random.randint(9, 11), DInfo[1])
+				exp(loser, random.randint(4, 6), AInfo[1])
 			else:
 				winner = AName
-				exp(AInfo,DInfo)
+				loser = DName
+				exp(winner, random.randint(9, 11), AInfo[1])
+				exp(loser, random.randint(4, 6), DInfo[1])
 		return winner ,AInfo ,DInfo
 
 
@@ -109,23 +113,25 @@ def combat(AInfo , DInfo):
 	print("%s HP = %s" % (DName,DHp))
 	return DHp
 
-def exp(W,L):
+#New code
+def exp(PlayerName, ExpAmount, PlayerExp)
+	#Generalized the exp giving code
 	cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
 	cursor = cnx.cursor()
-	WExp = W[2]
-	LExp = L[2]
-	WName = W[0]
-	LName = L[0]
+	PlayerExp += ExpAmount
 
-	WExp = WExp+random.randint(9, 11)
-	LExp = LExp+random.randint(4, 6)
-	sqlW = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (WExp,WName)
-	print(sqlW)
-	cursor.execute(sqlW)
-	cnx.commit()
-	sqlL = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (LExp,LName)
-	print(sqlL)
-	cursor.execute(sqlL)
+	if(PlayerExp >= 100):
+		print("Level Up!")
+		while(PlayerExp >= 100):
+			PlayerExp -= 100
+			LevelsToGive += 1
+		Expcommand = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (ExpAmount, PlayerName)
+		Levelcommand = "UPDATE stats SET Level = Level + %s WHERE Name = '%s'" % (LevelsToGive, PlayerName)
+		cursor.execute(Expcommand)
+		cursor.execute(Levelcommand)
+
+	else:
+		sql = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (ExpAmount, PlayerName)
+		cursor.execute(sql)
 	cnx.commit()
 	cnx.close()
-
