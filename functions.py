@@ -70,7 +70,7 @@ async def duel(message,challenger,target,channelid,bot):
 			msg  = await bot.send_message(channelid, "%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName,AHp , DName, DHp))
 			n = 1
 			print("AHP : %s  DHP : %s" % (AHp,DHp))
-			while AHp >= 0 and DHp >= 0 :	
+			while AHp > 0 and DHp > 0 :	
 					
 				if coinwinner == 0 :
 					DHp = combat(AInfo , DInfo)
@@ -97,7 +97,6 @@ async def duel(message,challenger,target,channelid,bot):
 				exp(loser, random.randint(4, 6), DInfo[1])
 		return winner ,AInfo ,DInfo
 
-
 def combat(AInfo , DInfo):
 	AName = AInfo[0]
 	AStr = AInfo[6]
@@ -114,12 +113,12 @@ def combat(AInfo , DInfo):
 	return DHp
 
 #New code
-def exp(PlayerName, ExpAmount, PlayerExp)
+def exp(PlayerName, ExpAmount, PlayerExp):
 	#Generalized the exp giving code
 	cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
 	cursor = cnx.cursor()
 	PlayerExp += ExpAmount
-
+	LevelsToGive = 0
 	if(PlayerExp >= 100):
 		print("Level Up!")
 		while(PlayerExp >= 100):
