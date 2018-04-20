@@ -4,9 +4,6 @@ import time
 import random
 from time import gmtime, strftime
 cdate = strftime("GMT %m/%d/%Y", gmtime())
-#Connecting to DB
-cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
-cursor = cnx.cursor()
 
 async def duel(message,challenger,target,channelid,bot):
 	if str(target) == str(challenger):
@@ -118,19 +115,20 @@ def exp(PlayerName, ExpAmount, PlayerExp):
 	cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
 	cursor = cnx.cursor()
 	PlayerExp += ExpAmount
+	print(str(PlayerExp) + "EXP CURRENTLY")
 	LevelsToGive = 0
 	if(PlayerExp >= 100):
 		print("Level Up!")
 		while(PlayerExp >= 100):
 			PlayerExp -= 100
 			LevelsToGive += 1
-		Expcommand = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (ExpAmount, PlayerName)
+		Expcommand = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (PlayerExp, PlayerName)
 		Levelcommand = "UPDATE stats SET Level = Level + %s WHERE Name = '%s'" % (LevelsToGive, PlayerName)
 		cursor.execute(Expcommand)
+		cnx.commit()
 		cursor.execute(Levelcommand)
-
+		cnx.commit()
 	else:
-		sql = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (ExpAmount, PlayerName)
+		sql = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (PlayerExp, PlayerName)
 		cursor.execute(sql)
-	cnx.commit()
-	cnx.close()
+		cnx.commit()

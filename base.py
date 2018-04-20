@@ -14,19 +14,11 @@ bot = commands.Bot(command_prefix = "$")
 bot.get_all_emojis()
 user = discord.User()
 
-#Connecting to DB
-cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
-cursor = cnx.cursor()
-
-
-
 ScriptName = "Text-Based RPG game for Discord"
 Website = "https://discord.gg/rm5Mbyu"
 Description = "......"
 Creator = "@DoneFear & @BoySanic"
 Version = "2.0.0.0"
-
-
 
 #on startup of bot in console
 @bot.event
@@ -44,6 +36,8 @@ async def on_message(message):
 		await bot.send_message(message.channel, "THE WORLD IS GOING TO DIE DIE DIE")
 
 	if message.content == "$create":
+		cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
+		cursor = cnx.cursor()
 		Name = str(message.author)
 		sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
 		cursor.execute(sql)
@@ -67,9 +61,12 @@ async def on_message(message):
 			cursor.execute(add_data, Data)
 			cnx.commit()
 		else:
-			await bot.send_message(message.channel,"Character already created ! use $info")			
+			await bot.send_message(message.channel,"Character already created ! use $info")		
+		cnx.close()	
 
 	if message.content == "$info":
+		cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
+		cursor = cnx.cursor()
 		name = str(message.author)
 		sql = "SELECT * FROM stats "" WHERE name = '%s'" % (name)		
 		cursor.execute(sql)		
@@ -93,7 +90,27 @@ async def on_message(message):
 				Dex = row[9]
 				# Now print fetched result
 				await bot.send_message(message.channel, "Name = %s,Level = %s,Exp = %d,Hp = %s,MaxHp = %s,Const = %s,Str = %s,Intel = %s,Dex = %s" % (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex))	
-	
+		cnx.close()
+	if message.content == ("$exp"):
+		cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
+		cursor = cnx.cursor()
+		sql = "SELECT * FROM stats WHERE name = '%s'" % (message.author)
+		cursor.execute(sql)
+		results = cursor.fetchall()
+		for row in results:
+				ID = row[0]
+				Name = row[1]
+				Level = row[2]
+				Exp = row[3]
+				Hp = row[4]
+				MaxHp = row[5]
+				Const = row[6]
+				Str = row[7]
+				Intel = row[8]
+				Dex = row[9]
+		print("Xp before functions.exp: %s" % (Exp))
+		functions.exp(message.author, 1, Exp)
+		cnx.close()
 	if message.content.upper() == "POOP":
 		await bot.send_message(message.channel, ":poop:")
 
