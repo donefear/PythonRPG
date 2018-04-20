@@ -4,9 +4,6 @@ import time
 import random
 from time import gmtime, strftime
 cdate = strftime("GMT %m/%d/%Y", gmtime())
-#Connecting to DB
-cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
-cursor = cnx.cursor()
 
 async def duel(message,challenger,target,channelid,bot):
 	if str(target) == str(challenger):
@@ -70,7 +67,7 @@ async def duel(message,challenger,target,channelid,bot):
 			msg  = await bot.send_message(channelid, "%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName,AHp , DName, DHp))
 			n = 1
 			print("AHP : %s  DHP : %s" % (AHp,DHp))
-			while AHp >= 0 and DHp >= 0 :	
+			while AHp > 0 and DHp > 0 :	
 					
 				if coinwinner == 0 :
 					DHp = combat(AInfo , DInfo)
@@ -87,12 +84,15 @@ async def duel(message,challenger,target,channelid,bot):
 				print(n)
 			if AHp <=0 :
 				winner = DName
-				exp(DInfo,AInfo)
+				loser = AName
+				exp(winner, random.randint(9, 11), DInfo[1])
+				exp(loser, random.randint(4, 6), AInfo[1])
 			else:
 				winner = AName
-				exp(AInfo,DInfo)
+				loser = DName
+				exp(winner, random.randint(9, 11), AInfo[1])
+				exp(loser, random.randint(4, 6), DInfo[1])
 		return winner ,AInfo ,DInfo
-
 
 def combat(AInfo , DInfo):
 	AName = AInfo[0]
@@ -109,23 +109,28 @@ def combat(AInfo , DInfo):
 	print("%s HP = %s" % (DName,DHp))
 	return DHp
 
-def exp(W,L):
+#New code
+def exp(PlayerName, ExpAmount, PlayerExp):
+	#Generalized the exp giving code
 	cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
 	cursor = cnx.cursor()
-	WExp = W[2]
-	LExp = L[2]
-	WName = W[0]
-	LName = L[0]
-
-	WExp = WExp+random.randint(9, 11)
-	LExp = LExp+random.randint(4, 6)
-	sqlW = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (WExp,WName)
-	print(sqlW)
-	cursor.execute(sqlW)
-	cnx.commit()
-	sqlL = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (LExp,LName)
-	print(sqlL)
-	cursor.execute(sqlL)
-	cnx.commit()
+	PlayerExp += ExpAmount
+	print(PlayerName)
+	print(str(PlayerExp) + "EXP CURRENTLY")
+	LevelsToGive = 0
+	if(PlayerExp >= 100):
+		print("Level Up!")
+		while(PlayerExp >= 100):
+			PlayerExp -= 100
+			LevelsToGive += 1
+		Expcommand = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (PlayerExp, PlayerName)
+		Levelcommand = "UPDATE stats SET Level = Level + %s WHERE Name = '%s'" % (LevelsToGive, PlayerName)
+		cursor.execute(Expcommand)
+		cnx.commit()
+		cursor.execute(Levelcommand)
+		cnx.commit()
+	else:
+		sql = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (PlayerExp, PlayerName)
+		cursor.execute(sql)
+		cnx.commit()
 	cnx.close()
-
