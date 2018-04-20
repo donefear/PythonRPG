@@ -100,8 +100,8 @@ def combat(AInfo , DInfo):
 	DDex = DInfo[8]
 	DHp = DInfo[3]
 	DName = DInfo[0]
-	Dice = random.randint(1, 6)
-	DMG = (AStr + Dice) - round(DDex*0.5)
+	Dice = random.randint(1, 12)
+	DMG = (AStr + Dice) - DDex
 	if DMG <=0:
 		DMG = 0
 	print("%s did %s dmg" % (AName,DMG))
