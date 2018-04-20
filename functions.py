@@ -115,6 +115,7 @@ def exp(PlayerName, ExpAmount, PlayerExp):
 	cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
 	cursor = cnx.cursor()
 	PlayerExp += ExpAmount
+	print(PlayerName)
 	print(str(PlayerExp) + "EXP CURRENTLY")
 	LevelsToGive = 0
 	if(PlayerExp >= 100):
@@ -132,3 +133,4 @@ def exp(PlayerName, ExpAmount, PlayerExp):
 		sql = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (PlayerExp, PlayerName)
 		cursor.execute(sql)
 		cnx.commit()
+	cnx.close()

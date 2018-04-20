@@ -109,7 +109,7 @@ async def on_message(message):
 				Intel = row[8]
 				Dex = row[9]
 		print("Xp before functions.exp: %s" % (Exp))
-		functions.exp(message.author, 1, Exp)
+		functions.exp(Name, 1, Exp)
 		cnx.close()
 	if message.content.upper() == "POOP":
 		await bot.send_message(message.channel, ":poop:")
