@@ -85,13 +85,15 @@ async def duel(message,challenger,target,channelid,bot):
 			if AHp <=0 :
 				winner = DName
 				loser = AName
-				exp(winner, random.randint(9, 11), DInfo[1])
-				exp(loser, random.randint(4, 6), AInfo[1])
+				await bot.send_message(channelid,"The winner was @%s" % winner)
+				await exp(winner, random.randint(9, 11), DInfo[2], bot, channelid)
+				await exp(loser, random.randint(4, 6), AInfo[2], bot, channelid)
 			else:
 				winner = AName
 				loser = DName
-				exp(winner, random.randint(9, 11), AInfo[1])
-				exp(loser, random.randint(4, 6), DInfo[1])
+				await bot.send_message(channelid,"The winner was @%s" % winner)
+				await exp(winner, random.randint(9, 11), AInfo[2], bot, channelid)
+				await exp(loser, random.randint(4, 6), DInfo[2], bot, channelid)
 		return winner ,AInfo ,DInfo
 
 def combat(AInfo , DInfo):
@@ -110,7 +112,7 @@ def combat(AInfo , DInfo):
 	return DHp
 
 #New code
-def exp(PlayerName, ExpAmount, PlayerExp):
+async def exp(PlayerName, ExpAmount, PlayerExp, bot, channelid):
 	#Generalized the exp giving code
 	cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
 	cursor = cnx.cursor()
@@ -129,8 +131,71 @@ def exp(PlayerName, ExpAmount, PlayerExp):
 		cnx.commit()
 		cursor.execute(Levelcommand)
 		cnx.commit()
+		await levelup(PlayerName, bot, channelid)
 	else:
 		sql = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (PlayerExp, PlayerName)
 		cursor.execute(sql)
 		cnx.commit()
 	cnx.close()
+
+async def levelup(Playername,bot, channelid):
+	cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
+	cursor = cnx.cursor()
+	msg = await bot.send_message(channelid, "------------------------------------------- \n Congratulations @%s you leveled up \n Please react with the corresponding emote to this message what you want to level up \n 💪 Strength \n ❤ Constitution \n 🤓 Intelligence \n 🖐 Dexterity" % (Playername))
+	# 💪❤🤓🖐
+	Reactioncheck = True
+	while Reactioncheck == True :
+		def check(reaction, user):
+			e = str(reaction.emoji)
+			return e.startswith(('💪','❤','🤓','🖐'))
+		res = await bot.wait_for_reaction(message=msg, check=check)
+		#await bot.send_message(message.channel, '{0.user} reacted with {0.reaction.emoji}!'.format(res))
+		emoji = "{0.reaction.emoji}".format(res)
+		emojiuser = "{0.user}".format(res)
+		#await bot.send_message(message.channel,"DEBUG:emojiuser vs targetid: emojiuser : %s | target : %s " %  (emojiuser,targetid))
+		print(emojiuser)
+		if str(emojiuser) == str(Playername):
+			if emoji == "💪":
+				Levelcommand = "UPDATE stats SET Str = Str + 1 WHERE Name = '%s'" % (Playername)			
+				
+			elif emoji == "❤":
+				Levelcommand = "UPDATE stats SET Const = Const + 1 WHERE Name = '%s'" % (Playername)
+
+			elif emoji == "🤓":
+				Levelcommand = "UPDATE stats SET Intel = Intel + 1 WHERE Name = '%s'" % (Playername)
+
+			elif emoji == "🖐":
+				Levelcommand = "UPDATE stats SET Dex = Dex + 1 WHERE Name = '%s'" % (Playername)
+			cursor.execute(Levelcommand)
+			cnx.commit()
+
+			sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Playername)		
+			cursor.execute(sql)		
+			# Fetch all the rows in a list of lists.
+			AttackerData = cursor.fetchall()	
+			sql = cursor.rowcount	
+			for row in AttackerData:
+				ID = row[0]
+				Name = row[1]
+				Level = row[2]
+				Exp = row[3]
+				Hp = row[4]
+				MaxHp = row[5]
+				Const = row[6]
+				Str = row[7]
+				Intel = row[8]
+				Dex = row[9]
+
+			NewHp = MaxHp + Const
+			MAXHP = "UPDATE stats SET MaxHP = %s WHERE Name = '%s'" % (NewHp, Playername)
+			cursor.execute(MAXHP)
+			cnx.commit()
+			HP = "UPDATE stats SET Hp = %s WHERE Name = '%s'" % (NewHp, Playername)
+			cursor.execute(HP)
+			cnx.commit()
+			cnx.close()
+			Reactioncheck = False 
+
+		else:
+			await bot.send_message(channelid,"Sorry you didn't level up so you can't choose a stat")
+			await bot.clear_reactions(message=msg)

@@ -24,12 +24,11 @@ Const INT(22),
 Str INT(22), 
 Intel INT(22), 
 Dex INT(22));
-TheFlyingCrocodile#1618
+------
+NEEDS REVISION !!!!!!!!!!!!!!!!!!!!!!
 
-
-
-attack  = Str attacker + 1d6 - Dex defender
-
+attack  = Str attacker + 1d12 - Dex defender
+--------
 Exp awarding : 
 max exp = 100
 Level = round(exp/100)+1
@@ -46,3 +45,56 @@ while hp >=0
 	then attack vs defender
 	else
 	defender vs atacker
+
+
+
+
+----------------------------LEVEL UP-----------------------------------------------------
+msg player with pm
+
+option to add a point to stats
+---------------------------------------------------------------
+?... == maybe to add features ???
+-----------------------------------------
+stats:
+	constitution
+		Maxhp
+	intelligence
+		chance of using magic abilty
+	strength
+		brute dmg
+	dexterity
+		crit chance 
+	luck
+		drops based on luck
+
+
+classes
+	Wizard
+		?cleric
+		?wisdom
+			ability strength ,but less offensive abilities
+	Fighter
+	Thief
+		crit chance
+			?bard
+				?charisma
+					buff/debuf on start of fight depending on a coinflip and INT
+					cheaper tavern use	
+
+abilitys
+	based on int for chance to use an ability
+	magic bolt 
+	heal
+	stun
+
+
+$rpg / $duel
+$rpg
+	go explore 
+
+	gamble
+		dice game 
+		higher lower game
+	rest
+		heal hp in tavern for ....currency

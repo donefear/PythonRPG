@@ -35,6 +35,11 @@ async def on_message(message):
 	if message.content == "suicide":
 		await bot.send_message(message.channel, "THE WORLD IS GOING TO DIE DIE DIE")
 
+	if message.content == "$ping":
+		Name = message.author
+		await bot.start_private_message(Name)
+		await bot.send_message(Name, "PONG")
+
 	if message.content == "$create":
 		cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
 		cursor = cnx.cursor()
@@ -224,8 +229,7 @@ async def on_message(message):
 							# await bot.send_message(message.channel,":+1: Accepted")
 							await bot.edit_message(msg,new_content=newmsg)
 							winner ,AInfo ,DInfo = await functions.duel(message,challenger,targetid,message.channel,bot)
-							await bot.send_message(message.channel,"The winner was @%s" % winner)
-
+							
 						elif emoji == "👎":
 							newmsg = "challenge DENIED"
 							# await bot.send_message(message.channel,":-1: DENIED")
