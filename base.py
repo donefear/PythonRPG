@@ -7,6 +7,7 @@ import time
 import random
 import functions
 import sys
+import debug
 from time import gmtime, strftime
 cdate = strftime("GMT %m/%d/%Y", gmtime())
 Client = discord.Client()
@@ -97,25 +98,7 @@ async def on_message(message):
 				await bot.send_message(message.channel, "Name = %s,Level = %s,Exp = %d,Hp = %s,MaxHp = %s,Const = %s,Str = %s,Intel = %s,Dex = %s" % (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex))	
 		cnx.close()
 	if message.content == ("$exp"):
-		cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
-		cursor = cnx.cursor()
-		sql = "SELECT * FROM stats WHERE name = '%s'" % (message.author)
-		cursor.execute(sql)
-		results = cursor.fetchall()
-		for row in results:
-				ID = row[0]
-				Name = row[1]
-				Level = row[2]
-				Exp = row[3]
-				Hp = row[4]
-				MaxHp = row[5]
-				Const = row[6]
-				Str = row[7]
-				Intel = row[8]
-				Dex = row[9]
-		print("Xp before functions.exp: %s" % (Exp))
-		functions.exp(Name, 1, Exp)
-		cnx.close()
+		await debug.expdebug(bot, message.channel, message.author)
 	if message.content.upper() == "POOP":
 		await bot.send_message(message.channel, ":poop:")
 
@@ -245,7 +228,7 @@ async def on_message(message):
 						await bot.clear_reactions(message=msg)
 						await clear(msg2)
 			else:
-				await bot.send_message(message.channel, "I'm allmighty you can't duel me")
+				await bot.send_message(message.channel, "I'm almighty you can't duel me")
 				active = 0
 
 

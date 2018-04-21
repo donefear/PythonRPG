@@ -156,16 +156,18 @@ async def levelup(Playername,bot, channelid):
 		print(emojiuser)
 		if str(emojiuser) == str(Playername):
 			if emoji == "💪":
-				Levelcommand = "UPDATE stats SET Str = Str + 1 WHERE Name = '%s'" % (Playername)			
+				Levelcommand = "UPDATE stats SET Str = Str + 1 WHERE Name = '%s'" % (Playername)
+				await bot.send_message(channelid, "You have chosen to upgrade your strength.")		
 				
 			elif emoji == "❤":
 				Levelcommand = "UPDATE stats SET Const = Const + 1 WHERE Name = '%s'" % (Playername)
-
+				await bot.send_message(channelid, "You have chosen to upgrade your constitution.")		
 			elif emoji == "🤓":
 				Levelcommand = "UPDATE stats SET Intel = Intel + 1 WHERE Name = '%s'" % (Playername)
-
+				await bot.send_message(channelid, "You have chosen to upgrade your intelligence.")		
 			elif emoji == "🖐":
 				Levelcommand = "UPDATE stats SET Dex = Dex + 1 WHERE Name = '%s'" % (Playername)
+				await bot.send_message(channelid, "You have chosen to upgrade your dexterity.")		
 			cursor.execute(Levelcommand)
 			cnx.commit()
 
