@@ -266,6 +266,6 @@ async def on_message(message):
 		# 	bot.clear_reactions(message=msg)
 
 
-
-bot.run("NDMyOTUzNjc4ODQwNzI1NTE1.Da1ANQ.TRV7uagT0Q0NhPCvKafsQ4VJ7xA")
+file = open('../token.txt', 'r') 
+bot.run(file.read())
 cnx.close()

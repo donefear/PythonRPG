@@ -6,7 +6,7 @@ import database
 from time import gmtime, strftime
 cdate = strftime("GMT %m/%d/%Y", gmtime())
 
-async def duel(message,challenger,target,channelid,bot):
+async def duel(message, challenger, target, channelid, bot):
 	if str(target) == str(challenger):
 		await bot.send_message(channelid, "FUCK YOU CHEATER GO SELF HARM SOMEWHERE ELSE")
 	else:
