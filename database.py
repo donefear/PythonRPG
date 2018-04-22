@@ -8,7 +8,7 @@ async def DownloadFullRecord(Name, table):
 	cnx.commit()
 	cnx.close()
 	return output
-async def SetField(Name, Table, Field, Value):
+async def UpdateField(Name, Table, Field, Value):
 	cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
 	cursor = cnx.cursor()
 	sql = "UPDATE %s SET %s = %s WHERE name = '%s'" % (Table, Field, Value, Name)

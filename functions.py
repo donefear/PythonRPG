@@ -10,15 +10,10 @@ async def duel(message,challenger,target,channelid,bot):
 	if str(target) == str(challenger):
 		await bot.send_message(channelid, "FUCK YOU CHEATER GO SELF HARM SOMEWHERE ELSE")
 	else:
-		cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
-		cursor = cnx.cursor()
 		print(str(challenger) + str(target))
 		print("FIGHT")
-		sqlA = "SELECT * FROM stats "" WHERE name = '%s'" % (challenger)		
-		cursor.execute(sqlA)		
-		# Fetch all the rows in a list of lists.
-		AttackerData = cursor.fetchall()	
-		countA = cursor.rowcount	
+		AttackerData = await database.DownloadFullRecord(challenger, "stats")	
+		countA = len(AttackerData)
 		for row in AttackerData:
 			AID = row[0]
 			AName = row[1]
@@ -30,12 +25,8 @@ async def duel(message,challenger,target,channelid,bot):
 			AStr = row[7]
 			AIntel = row[8]
 			ADex = row[9]
-
-		sqlD = "SELECT * FROM stats "" WHERE name = '%s'" % (target)
-		cursor.execute(sqlD)	
-		# Fetch all the rows in a list of lists.
-		DefenderData = cursor.fetchall()
-		countD = cursor.rowcount
+		DefenderData = await database.DownloadFullRecord(target, "stats")
+		countD = len(DefenderData)
 		for row in DefenderData:
 			DID = row[0]
 			DName = row[1]
@@ -49,55 +40,47 @@ async def duel(message,challenger,target,channelid,bot):
 			DDex = row[9]	
 		print(DefenderData)
 		print(countD)
+		DefenderData = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
+		AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)	
 		if countA == 0 :
 			await bot.send_message(channelid," @%s ERROR : No character found please make a character with the '$create' command" % (challenger))
 		elif countD == 0 :
 			await bot.send_message(channelid," @%s ERROR : No character found please make a character with the '$create' command" % (target))
 		else:
-
 			await asyncio.sleep(2)
-			AInfo = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
-			DInfo = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
-
-
 			coinwinner = random.randint(0,1)
 			if coinwinner == 0:
 				await bot.send_message(channelid, "Winner of the CoinFlip is %s they get the first strike" % (AName))
 			else:
 				await bot.send_message(channelid, "Winner of the CoinFlip is %s they get the first strike" % (DName))
-			msg  = await bot.send_message(channelid, "%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName,AHp , DName, DHp))
-			n = 1
-			print("AHP : %s  DHP : %s" % (AHp,DHp))
+			msg  = await bot.send_message(channelid, "%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName, AHp , DName, DHp))
+			print("AHP : %s  DHP : %s" % (AHp, DHp))
 			while AHp > 0 and DHp > 0 :	
-					
 				if coinwinner == 0 :
-					DHp = combat(AInfo , DInfo)
+					DHp = combat(AttackerData , DefenderData)
 					coinwinner = 1
-					DInfo = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
-					n = n+1
+					DefenderData = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
 				else:
-					AHp = combat(DInfo , AInfo)
+					AHp = combat(DefenderData , AttackerData)
 					coinwinner = 0
-					AInfo = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)				
-					n = n+1
+					AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)				
 				await asyncio.sleep(1)
 				await bot.edit_message(msg,new_content="%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName,AHp , DName, DHp))
-				print(n)
 			if AHp <=0 :
 				winner = DName
 				loser = AName
 				await bot.send_message(channelid,"The winner was @%s" % winner)
-				await exp(winner, random.randint(9, 11), DInfo[2], bot, channelid)
-				await exp(loser, random.randint(4, 6), AInfo[2], bot, channelid)
+				await exp(winner, random.randint(9, 11), DExp, bot, channelid)
+				await exp(loser, random.randint(4, 6), AExp, bot, channelid)
 			else:
 				winner = AName
 				loser = DName
 				await bot.send_message(channelid,"The winner was @%s" % winner)
-				await exp(winner, random.randint(9, 11), AInfo[2], bot, channelid)
-				await exp(loser, random.randint(4, 6), DInfo[2], bot, channelid)
-		return winner ,AInfo ,DInfo
+				await exp(winner, random.randint(9, 11), AExp, bot, channelid)
+				await exp(loser, random.randint(4, 6), DExp, bot, channelid)
+		return winner, AttackerData, DefenderData
 
-def combat(AInfo , DInfo):
+def combat(AInfo, DInfo):
 	AName = AInfo[0]
 	AStr = AInfo[6]
 	DDex = DInfo[8]
@@ -112,11 +95,8 @@ def combat(AInfo , DInfo):
 	print("%s HP = %s" % (DName,DHp))
 	return DHp
 
-#New code
 async def exp(PlayerName, ExpAmount, PlayerExp, bot, channelid):
 	#Generalized the exp giving code
-	cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
-	cursor = cnx.cursor()
 	PlayerExp += ExpAmount
 	print(PlayerName)
 	print(str(PlayerExp) + "EXP CURRENTLY")
@@ -126,18 +106,10 @@ async def exp(PlayerName, ExpAmount, PlayerExp, bot, channelid):
 		while(PlayerExp >= 100):
 			PlayerExp -= 100
 			LevelsToGive += 1
-		Expcommand = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (PlayerExp, PlayerName)
-		Levelcommand = "UPDATE stats SET Level = Level + %s WHERE Name = '%s'" % (LevelsToGive, PlayerName)
-		cursor.execute(Expcommand)
-		cnx.commit()
-		cursor.execute(Levelcommand)
-		cnx.commit()
+		#async def UpdateField(Name, Table, Field, Value):
+		await database.IncrementFieldByValue(PlayerName, "stats", "Level", LevelsToGive)
 		await levelup(PlayerName, bot, channelid)
-	else:
-		sql = "UPDATE stats SET Exp = %s WHERE Name = '%s'" % (PlayerExp, PlayerName)
-		cursor.execute(sql)
-		cnx.commit()
-	cnx.close()
+	await database.UpdateField(PlayerName, "stats", "Exp", PlayerExp)
 
 async def levelup(Playername,bot, channelid):
 	msg = await bot.send_message(channelid, "------------------------------------------- \n Congratulations @%s you leveled up \n Please react with the corresponding emote to this message what you want to level up \n 💪 Strength \n ❤ Constitution \n 🤓 Intelligence \n 🖐 Dexterity" % (Playername))
