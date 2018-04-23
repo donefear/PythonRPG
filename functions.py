@@ -8,7 +8,7 @@ cdate = strftime("GMT %m/%d/%Y", gmtime())
 
 async def duel(message, challenger, target, channelid, bot):
 	if str(target) == str(challenger):
-		await bot.send_message(channelid, "FUCK YOU CHEATER GO SELF HARM SOMEWHERE ELSE")
+		await bot.send_message(channelid, "FUCK YOU CHEATER GO SELFHARM SOMEWHERE ELSE")
 	else:
 		print(str(challenger) + str(target))
 		print("FIGHT")
