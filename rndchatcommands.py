@@ -93,4 +93,28 @@ async def chat(message,channelid,bot):
 		info = await database.testrecord(name)
 		await bot.send_message(message.channel,"%s" % (info))
 
+	if message.content.startswith("$purge"):
+		author = message.author
+		#await bot.send_message(message.channel,"DEBUG:author :  %s " %  (author))
+		if str(author) == 'DoneFear#0897':
+			await bot.send_message(message.channel, "PURGING CHANNEL")
+			await bot.send_message(message.channel, "💣💣💣💣💣💣💣💣💣💣")
+			await bot.send_message(message.channel, "💥💥💥💥💥💥💥💥💥💥")
+			await bot.send_message(message.channel, "☠☠☠☠☠☠☠☠☠☠")
+			await bot.send_message(message.channel, "PURGING CHANNEL")
+			async def purge(channel):
+				print("waiting 2.5 sec")
+				await asyncio.sleep(2.5)
+				print("deleting msg")
+				await bot.purge_from(channel,limit=1000)
+			await purge(message.channel)
+		else:
+			async def clear(msg2):
+				print("waiting 10 sec")
+				await asyncio.sleep(10)
+				print("deleting msg")
+				await bot.delete_message(msg2)
+			msg2 = await bot.send_message(message.channel, ":x: :x: :x: ACCESS DENIED :x: :x: :x: ")
+			await clear(msg2)
+
 

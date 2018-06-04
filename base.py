@@ -8,6 +8,8 @@ import random
 import functions
 import sys
 import debug
+import configparser
+import database
 import rndchatcommands
 from time import gmtime, strftime
 cdate = strftime("GMT %m/%d/%Y", gmtime())
@@ -34,52 +36,21 @@ async def on_ready():
 #on recieve msg in discord
 @bot.event
 async def on_message(message):
-	
-
 
 	if message.content == "$create":
-		cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
-		cursor = cnx.cursor()
+		await bot.send_message(message.channel, "Character being created...")
 		Name = str(message.author)
-		sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
-		cursor.execute(sql)
-		results = cursor.fetchall()	
-		count = cursor.rowcount		
-		if count == 0:
-			await bot.send_message(message.channel, "Character being created...")
-			Const = random.randint(1, 10)
-			Str = random.randint(1, 10)
-			Intel = random.randint(1, 10)
-			Dex = random.randint(1, 10)		
-			Level = 1
-			Exp = 0 
-			MaxHp = 10+Const*Level
-			Hp = MaxHp
-			add_data = ("INSERT INTO stats (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex) ""VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)")
-			Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)
-			await bot.send_message(message.channel, "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Str: %s \n🤓Intel: %s | 🖐Dex: %s" % (Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex))
-			print(add_data, Data)
-			print(Data)
-			cursor.execute(add_data, Data)
-			cnx.commit()
-		else:
-			await bot.send_message(message.channel,"Character already created ! use $info")		
-		cnx.close()	
-
+		msg = database.CreateRecord(Name)
+		await bot.send_message(message.channel, msg)
 	elif message.content == "$info":
-		cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
-		cursor = cnx.cursor()
-		name = str(message.author)
-		sql = "SELECT * FROM stats "" WHERE name = '%s'" % (name)		
-		cursor.execute(sql)		
-		# Fetch all the rows in a list of lists.
-		results = cursor.fetchall()
-		count = cursor.rowcount
+		name = str(message.author)		
+		Data = await database.DownloadFullRecord(name, "stats")	
+		count = len(Data)
 		print(count)
 		if count == 0:
 			await bot.send_message(message.channel,"No character created ! use `$create`")	
 		else:
-			for row in results:
+			for row in Data:
 				ID = row[0]
 				Name = row[1]
 				Level = row[2]
@@ -151,34 +122,6 @@ async def on_message(message):
 				active = 0
 
 
-	elif message.content.startswith("$purge"):
-		author = message.author
-		#await bot.send_message(message.channel,"DEBUG:author :  %s " %  (author))
-		if str(author) == 'DoneFear#0897':
-			await bot.send_message(message.channel, "PURGING CHANNEL")
-			await bot.send_message(message.channel, "💣💣💣💣💣💣💣💣💣💣")
-			await bot.send_message(message.channel, "💥💥💥💥💥💥💥💥💥💥")
-			await bot.send_message(message.channel, "☠☠☠☠☠☠☠☠☠☠")
-			await bot.send_message(message.channel, "PURGING CHANNEL")
-			async def purge(channel):
-				print("waiting 2.5 sec")
-				await asyncio.sleep(2.5)
-				print("deleting msg")
-				await bot.purge_from(channel,limit=1000)
-			await purge(message.channel)
-		else:
-			async def clear(msg2):
-				print("waiting 10 sec")
-				await asyncio.sleep(10)
-				print("deleting msg")
-				await bot.delete_message(msg2)
-			msg2 = await bot.send_message(message.channel, ":x: :x: :x: ACCESS DENIED :x: :x: :x: ")
-			await clear(msg2)
-
-
-
-
-
 
 		# else:
 		# 	await bot.send_message(message.channel,"DEBUG:clear reactions: message = %s , emoji = %s , member = %s" % (msg,emoji,emojiuser))
@@ -188,6 +131,12 @@ async def on_message(message):
 		await rndchatcommands.chat(message,message.channel,bot)
 
 
-file = open('token.txt', 'r') 
-bot.run(file.read())
-# cnx.close()
+# file = open('token.txt', 'r')
+# bot.run(file.read())
+
+config = configparser.ConfigParser()
+config.read(['config.ini', 'persontoken.ini'])
+DBToken = config['Bot-Token']
+token = DBToken['token']
+bot.run(token)
+cnx.close()

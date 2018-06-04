@@ -16,3 +16,4 @@ Packages used:
 - discord
 - mysql.connector
 - Sqlalchemy
+- ConfigParser
