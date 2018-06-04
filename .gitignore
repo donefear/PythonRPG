@@ -46,5 +46,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 ftpsync.settings
-sftp-config-alt.json
+dbtoken.txt
+token.txt
 sftp-config.json
+sftp-config-alt.json
