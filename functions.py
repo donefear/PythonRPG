@@ -12,7 +12,8 @@ async def duel(message, challenger, target, channelid, bot):
 	else:
 		print(str(challenger) + str(target))
 		print("FIGHT")
-		AttackerData = await database.DownloadFullRecord(challenger, "stats")	
+		AttackerData = await database.DownloadFullRecord(challenger)	
+		print(AttackerData)
 		countA = len(AttackerData)
 		for row in AttackerData:
 			AID = row[0]
@@ -25,7 +26,7 @@ async def duel(message, challenger, target, channelid, bot):
 			AStr = row[7]
 			AIntel = row[8]
 			ADex = row[9]
-		DefenderData = await database.DownloadFullRecord(target, "stats")
+		DefenderData = await database.DownloadFullRecord(target)
 		countD = len(DefenderData)
 		for row in DefenderData:
 			DID = row[0]
@@ -38,7 +39,6 @@ async def duel(message, challenger, target, channelid, bot):
 			DStr = row[7]
 			DIntel = row[8]
 			DDex = row[9]	
-		print(DefenderData)
 		print(countD)
 		DefenderData = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
 		AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)	
@@ -47,6 +47,8 @@ async def duel(message, challenger, target, channelid, bot):
 		elif countD == 0 :
 			await bot.send_message(channelid," @%s ERROR : No character found please make a character with the '$create' command" % (target))
 		else:
+			DefenderData = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
+			AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
 			await asyncio.sleep(2)
 			coinwinner = random.randint(0,1)
 			if coinwinner == 0:
@@ -78,9 +80,11 @@ async def duel(message, challenger, target, channelid, bot):
 				await bot.send_message(channelid,"The winner was @%s" % winner)
 				await exp(winner, random.randint(9, 11), AExp, bot, channelid)
 				await exp(loser, random.randint(4, 6), DExp, bot, channelid)
-		return winner, AttackerData, DefenderData
+		return
 
 def combat(AInfo, DInfo):
+	#DInfo = DefenderData = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
+	#AInfo = AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
 	AName = AInfo[0]
 	AStr = AInfo[6]
 	DDex = DInfo[8]
@@ -125,7 +129,7 @@ async def levelup(Playername,bot, channelid):
 		emojiuser = "{0.user}".format(res)
 		#await bot.send_message(message.channel,"DEBUG:emojiuser vs targetid: emojiuser : %s | target : %s " %  (emojiuser,targetid))
 		print(emojiuser)
-		AttackerData = await database.DownloadFullRecord(str(Playername), "stats")
+		AttackerData = await database.DownloadFullRecord(str(Playername))
 		for rows in AttackerData:
 				ID = rows[0]
 				Name = rows[1]
