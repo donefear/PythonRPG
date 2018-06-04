@@ -1,106 +1,128 @@
 import mysql.connector
-import asyncio
-import sqlalchemy
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-Base = declarative_base()
-file = open('dbtoken.txt', 'r')
-engine = create_engine(file.read())
-from sqlalchemy import Column, Integer, String
+import configparser
 
-Session = sessionmaker(bind=engine)
-session = Session()
+config = configparser.ConfigParser()
+config.read(['config.ini', 'persontoken.ini'])
+DBToken = config['MySQL']
+token_user = DBToken['user']
+token_password = DBToken['password']
+token_database = DBToken['database']
+token_host = DBToken['host']
 
-class User(Base):
-	__tablename__ = 'stats'
+# import asyncio
+# import sqlalchemy
+# from sqlalchemy import create_engine
+# from sqlalchemy.orm import sessionmaker
+# from sqlalchemy.ext.declarative import declarative_base
+# Base = declarative_base()
+# from sqlalchemy import Column, Integer, String
 
-	id = Column(Integer, primary_key=True)
-	Name = Column(String)
-	Level = Column(Integer)
-	Exp = Column(Integer)
-	Hp = Column(Integer)
-	MaxHp = Column(Integer)
-	Const = Column(Integer)
-	Str = Column(Integer)
-	Intel = Column(Integer)
-	Dex = Column(Integer)
-	def __repr__(self):
-		return "<User(Name='%s', Level='%s', Exp='%s', Hp='%s', MaxHp='%s', Const='%s', Str='%s', Intel='%s', Dex='%s')>" % (self.Name, self.Level, self.Exp, self.Hp, self.MaxHp, self.Const, self.Str, self.Intel, self.Dex)
+# Session = sessionmaker(bind=engine)
+# session = Session()
 
+# class User(Base):
+# 	__tablename__ = 'stats'
 
-
-async def testrecord(Name):
-	Db =  session.query(User).filter_by(Name=Name).first()
-	output = [[Db.id,Db.Name,Db.Level,Db.Exp,Db.Hp,Db.MaxHp,Db.Const,Db.Str,Db.Intel,Db.Dex]]
-	print(session.dirty)
-	session.commit()
-	session.close()
-	print(output)
-	return output
-
-async def DownloadFullRecord(Name):
-	Db =  session.query(User).filter_by(Name=str(Name)).first()
-	output = [[Db.id,Db.Name,Db.Level,Db.Exp,Db.Hp,Db.MaxHp,Db.Const,Db.Str,Db.Intel,Db.Dex]]
-	print(session.dirty)
-	session.commit()
-	session.close()
-	return output
+# 	id = Column(Integer, primary_key=True)
+# 	Name = Column(String)
+# 	Level = Column(Integer)
+# 	Exp = Column(Integer)
+# 	Hp = Column(Integer)
+# 	MaxHp = Column(Integer)
+# 	Const = Column(Integer)
+# 	Str = Column(Integer)
+# 	Intel = Column(Integer)
+# 	Dex = Column(Integer)
+# 	def __repr__(self):
+# 		return "<User(Name='%s', Level='%s', Exp='%s', Hp='%s', MaxHp='%s', Const='%s', Str='%s', Intel='%s', Dex='%s')>" % (self.Name, self.Level, self.Exp, self.Hp, self.MaxHp, self.Const, self.Str, self.Intel, self.Dex)
 
 
-# async def DownloadFullRecord(Name, table):
-# 	cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
-# 	cursor = cnx.cursor()
-# 	sql = "SELECT * FROM %s "" WHERE name = '%s'" % (table, Name)		
-# 	cursor.execute(sql)
-# 	output = cursor.fetchall()
-# 	cnx.commit()
-# 	cnx.close()
+
+# async def testrecord(Name):
+# 	Db =  session.query(User).filter_by(Name=Name).first()
+# 	output = [[Db.id,Db.Name,Db.Level,Db.Exp,Db.Hp,Db.MaxHp,Db.Const,Db.Str,Db.Intel,Db.Dex]]
+# 	session.commit()
+# 	session.close()
+# 	print(output)
 # 	return output
 
-async def UpdateField(Name, Table, Field, Value):
-	print("updating databse")
-	print("Name = %s" % (Name))
-	Db =  session.query(User).filter_by(Name=str(Name)).first()
-	print("%s" % (Field))
-	DbField = "Db.%s" % (Field)
-	print("%s" % (DbField))
-	Update = "%s = %s" % (DbField, Value)
-	print("updating :::::: %s" % (Update))
-	DbField = Value
-	Update
-	print(session.dirty)
-	session.commit()
-	session.close()
-	return
-
-async def UpdateFieldByValue(Name, Table, Field, Value):
-	print("updating databse")
-	Db =  session.query(User).filter_by(Name=str(Name)).first()
-	DbField = "Db.%s" % (Field)
-	Update = "%s = %s + %s " % (DbField, DbField , Value)
-	print("updating :::::: %s" % (Update))
-	Update
-	print(session.dirty)
-	session.commit()
-	session.close()		
-	return 
-
+# async def DownloadFullRecord(Name):
+# 	Db =  session.query(User).filter_by(Name=str(Name)).first()
+# 	output = [[Db.id,Db.Name,Db.Level,Db.Exp,Db.Hp,Db.MaxHp,Db.Const,Db.Str,Db.Intel,Db.Dex]]
+# 	return output
 
 # async def UpdateField(Name, Table, Field, Value):
-# 	cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
-# 	cursor = cnx.cursor()
-# 	sql = "UPDATE %s SET %s = %s WHERE name = '%s'" % (Table, Field, Value, Name)
-# 	cursor.execute(sql)
-# 	cnx.commit()
-# 	cnx.close()
+# 	# Update =  session.query(User).filter_by(Name=str(Name)).first()
+# 	strField = str(Field)
+# 	strField = Value
+# 	print("field : %s , value : %s" % (str(Field),Value))
+# 	print(session.dirty)
+# 	session.commit()
+# 	session.close()
 
+# async def UpdateFieldByValue(Name, Table, Field, Value):
+# 	print("updating databse")
+# 	Db =  session.query(User).filter_by(Name=str(Name)).first()
+# 	DbField = "Db.%s" % (Field)
+# 	Update = "%s = %s + %s " % (DbField, DbField , Value)
+# 	print("updating :::::: %s" % (Update))
+# 	Update
+# 	print(session.dirty)
+# 	session.commit()
+# 	session.close()	
+
+async def CreateRecord(Name):
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	Name = str(message.author)
+	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
+	cursor.execute(sql)
+	results = cursor.fetchall()	
+	count = cursor.rowcount		
+	if count == 0:
+		Const = random.randint(1, 10)
+		Str = random.randint(1, 10)
+		Intel = random.randint(1, 10)
+		Dex = random.randint(1, 10)		
+		Level = 1
+		Exp = 0 
+		MaxHp = 10+Const*Level
+		Hp = MaxHp
+		add_data = ("INSERT INTO stats (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex) ""VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)")
+		Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)
+		msg =  "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Str: %s \n🤓Intel: %s | 🖐Dex: %s" % (Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex)
+		print(add_data, Data)
+		print(Data)
+		cursor.execute(add_data, Data)
+		cnx.commit()
+	else:
+		msg = "Character already created ! use $info"	
+	cnx.close()	
+	return msg
+
+async def DownloadFullRecord(Name, Table):
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = "SELECT * FROM %s "" WHERE name = '%s'" % (Table, Name)		
+	cursor.execute(sql)
+	output = cursor.fetchall()
+	cnx.commit()
+	cnx.close()
+	return output
+
+async def UpdateField(Name, Table, Field, Value):
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = "UPDATE %s SET %s = %s WHERE name = '%s'" % (Table, Field, Value, Name)
+	cursor.execute(sql)
+	cnx.commit()
+	cnx.close()
 	
-# async def IncrementFieldByValue(Name, Table, Field, Value):
-# 	cnx = mysql.connector.connect(user='bot', password='potato',database='rpg',host='127.0.0.1')
-# 	cursor = cnx.cursor()
-# 	sql = "UPDATE %s SET %s = %s + %s WHERE name = '%s'" % (Table, Field, Field, Value, Name)
-# 	cursor.execute(sql)
-# 	cnx.commit()
-# 	cnx.close()
+async def IncrementFieldByValue(Name, Table, Field, Value):
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = "UPDATE %s SET %s = %s + %s WHERE name = '%s'" % (Table, Field, Field, Value, Name)
+	cursor.execute(sql)
+	cnx.commit()
+	cnx.close()
 

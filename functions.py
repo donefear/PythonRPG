@@ -12,7 +12,7 @@ async def duel(message, challenger, target, channelid, bot):
 	else:
 		print(str(challenger) + str(target))
 		print("FIGHT")
-		AttackerData = await database.DownloadFullRecord(challenger)	
+		AttackerData = await database.DownloadFullRecord(challenger, 'stats')	
 		print(AttackerData)
 		countA = len(AttackerData)
 		for row in AttackerData:
@@ -26,7 +26,7 @@ async def duel(message, challenger, target, channelid, bot):
 			AStr = row[7]
 			AIntel = row[8]
 			ADex = row[9]
-		DefenderData = await database.DownloadFullRecord(target)
+		DefenderData = await database.DownloadFullRecord(target, 'stats')
 		countD = len(DefenderData)
 		for row in DefenderData:
 			DID = row[0]
@@ -129,7 +129,7 @@ async def levelup(Playername,bot, channelid):
 		emojiuser = "{0.user}".format(res)
 		#await bot.send_message(message.channel,"DEBUG:emojiuser vs targetid: emojiuser : %s | target : %s " %  (emojiuser,targetid))
 		print(emojiuser)
-		AttackerData = await database.DownloadFullRecord(str(Playername))
+		AttackerData = await database.DownloadFullRecord(str(Playername), 'stats')
 		for rows in AttackerData:
 				ID = rows[0]
 				Name = rows[1]
