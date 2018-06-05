@@ -162,3 +162,44 @@ async def levelup(Playername,bot, channelid):
 		else:
 			await bot.send_message(channelid,"Sorry you didn't level up so you can't choose a stat")
 			await bot.clear_reactions(message=msg)
+
+async def Rest(PlayerName):
+	Data = await database.DownloadFullRecord(PlayerName, 'stats')
+	count = len(Data)
+	for row in Data:
+		ID = row[0]
+		Name = row[1]
+		Level = row[2]
+		Exp = row[3]
+		Hp = row[4]
+		MaxHp = row[5]
+		Const = row[6]
+		Str = row[7]
+		Intel = row[8]
+		Dex = row[9]	
+	print(count)
+	Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)
+	if count == 0 :
+		await bot.send_message(channelid, "@%s ERROR : No character found please make a character with the '$create' command" % (PlayerName))
+	else:
+		await  database.UpdateField(PlayerName, "stats", "Hp", MaxHp)
+	msg = "The sun rises and you feel refreshed after a nice night rest."
+	return msg
+
+async def Brothel(PlayerName):
+	return msg
+
+async def Gamble(PlayerName):
+	return msg 
+
+async def Shop(PlayerName):
+	return msg 
+
+async def Forrest(PlayerName):
+	return msg
+
+async def Sewer(PlayerName):
+	return msg
+
+async def Mountain(PlayerName):
+	return msg

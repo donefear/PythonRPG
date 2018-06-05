@@ -9,11 +9,6 @@ async def chat(message,channelid,bot):
 
 	if message.content == "suicide":
 		await bot.send_message(channelid, "THE WORLD IS GOING TO DIE DIE DIE")
-
-	if message.content == "$ping":
-		Name = message.author
-		await bot.start_private_message(Name)
-		await bot.send_message(Name, "PONG")
 		
 	if message.content.upper() == "POOP":
 		await bot.send_message(channelid, ":poop:")
@@ -117,4 +112,7 @@ async def chat(message,channelid,bot):
 			msg2 = await bot.send_message(message.channel, ":x: :x: :x: ACCESS DENIED :x: :x: :x: ")
 			await clear(msg2)
 
-
+	if message.content == "$ping":
+		Name = message.author
+		await bot.start_private_message(Name)
+		await bot.send_message(Name, "PONG")

@@ -42,6 +42,7 @@ async def on_message(message):
 		Name = str(message.author)
 		msg = database.CreateRecord(Name)
 		await bot.send_message(message.channel, msg)
+
 	elif message.content == "$info":
 		name = str(message.author)		
 		Data = await database.DownloadFullRecord(name, "stats")	
@@ -63,10 +64,43 @@ async def on_message(message):
 				Dex = row[9]
 				# Now print fetched result'💪','❤','🤓','🖐'
 				await bot.send_message(message.channel, "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Str: %s \n🤓Intel: %s | 🖐Dex: %s" % (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex))	
-		cnx.close()
 
 	elif message.content == ("$exp"):
 		await debug.expdebug(bot, message.channel, message.author)
+
+	elif message.content == ("$town"):
+		user = message.author
+		await bot.send_message(message.channel, "You walk in town and see some tree's in the distance to your left `$forrest`, \nin front of you you see a old but cozy `$tavern` with a `$blacksmith` annexing it. \nBehind the Tavern you notice a `$mountain` \nTo your right you see an old run down `$shop` with an entrance to the `$sewer` next to it")
+	elif message.content == ("$tavern"):
+		user = message.author
+		await bot.send_message(message.channel, 'Welcome %s how can i help you ?' % (user))
+		await bot.send_message(message.channel, "I could offer you a nice bedroom `$sleep` \nOr if you're not sleepy downstairs we have a gambling room `$gamble` , \nor some ladies of the night `$brothel`")
+	
+	elif message.content == ("$sleep"): 
+		user = message.author
+		msg = await functions.Rest(user)
+		await bot.send_message(message.channel, msg)
+
+	elif message.content == ("$gamble"): 
+		user = message.author
+
+	elif message.content == ("$brothel"): 
+		user = message.author
+
+	elif message.content == ("$shop"): 
+		user = message.author
+
+	elif message.content == ("$blacksmith"): 
+		user = message.author
+
+	elif message.content == ("$sewer"): 
+		user = message.author
+
+	elif message.content == ("$forrest"): 
+		user = message.author
+		
+	elif message.content == ("$mountain"): 
+		user = message.author
 
 	elif message.content.startswith("$duel"):
 		active = 1

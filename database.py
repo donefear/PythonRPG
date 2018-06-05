@@ -114,6 +114,7 @@ async def UpdateField(Name, Table, Field, Value):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
 	sql = "UPDATE %s SET %s = %s WHERE name = '%s'" % (Table, Field, Value, Name)
+	print("updating %s with %s" % (Field,Value))
 	cursor.execute(sql)
 	cnx.commit()
 	cnx.close()
