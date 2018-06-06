@@ -63,23 +63,32 @@ async def on_message(message):
 				Intel = row[8]
 				Dex = row[9]
 				# Now print fetched result'💪','❤','🤓','🖐'
-				await bot.send_message(message.channel, "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Str: %s \n🤓Intel: %s | 🖐Dex: %s" % (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex))	
+				await bot.send_message(message.channel, "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Attack: %s \n🍀Luck^: %s | 🖐Defence: %s" % (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex))	
 
 	elif message.content == ("$exp"):
 		await debug.expdebug(bot, message.channel, message.author)
 
 	elif message.content == ("$town"):
 		user = message.author
-		await bot.send_message(message.channel, "You walk in town and see some tree's in the distance to your left `$forrest`, \nin front of you you see a old but cozy `$tavern` with a `$blacksmith` annexing it. \nBehind the Tavern you notice a `$mountain` \nTo your right you see an old run down `$shop` with an entrance to the `$sewer` next to it")
+		await bot.send_message(message.channel, "You walk in town and see some trees in the distance to your left where there is a vast `$forest`. \nIn front of you there's an old but cozy `$tavern` with a `$blacksmith` annexing it. \nBehind the Tavern you notice a range of `$mountains` in the distance. \nTo your right you see an old run down `$shop` with an entrance to the `$sewer` next to it.")
+		place = "town"
+		await database.UpdateField(user, "stats", "location", place)
+
 	elif message.content == ("$tavern"):
 		user = message.author
 		await bot.send_message(message.channel, 'Welcome %s how can i help you ?' % (user))
-		await bot.send_message(message.channel, "I could offer you a nice bedroom `$sleep` \nOr if you're not sleepy downstairs we have a gambling room `$gamble` , \nor some ladies of the night `$brothel`")
+		await bot.send_message(message.channel, "I could offer you a nice bedroom to `$sleep` , Or if you're not tired, \ndownstairs we have a room to `$gamble` , or maybe the `$brothel` is more your style? \nWe have a fine selection of beautiful women.")
+		place = "tavern"
+		await database.UpdateField(user, "stats", "location", place)
 	
 	elif message.content == ("$sleep"): 
 		user = message.author
-		msg = await functions.Rest(user)
-		await bot.send_message(message.channel, msg)
+		location = database.GetLocation(user)
+		if str(location) == "tavern":
+			msg = await functions.Rest(user)
+			await bot.send_message(message.channel, msg)
+		else:
+			await bot.send_message(message.channel, "Why do you try to sleep here ? you are nowhere near a tavern/bed!")
 
 	elif message.content == ("$gamble"): 
 		user = message.author
@@ -96,10 +105,10 @@ async def on_message(message):
 	elif message.content == ("$sewer"): 
 		user = message.author
 
-	elif message.content == ("$forrest"): 
+	elif message.content == ("$forest"): 
 		user = message.author
-		
-	elif message.content == ("$mountain"): 
+
+	elif message.content == ("$mountains"): 
 		user = message.author
 
 	elif message.content.startswith("$duel"):

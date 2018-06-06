@@ -1,5 +1,5 @@
 # PythonRPG
-RPG TEXT BASED DISCORD GAME
+RPG TEXT BASED DISCORD GAME  
 Hi. You've stumbled upon this project.
 
 ScriptName = "Text-Based RPG game for Discord"  

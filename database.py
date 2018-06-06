@@ -90,7 +90,7 @@ async def CreateRecord(Name):
 		Hp = MaxHp
 		add_data = ("INSERT INTO stats (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex) ""VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)")
 		Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)
-		msg =  "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Str: %s \n🤓Intel: %s | 🖐Dex: %s" % (Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex)
+		msg =  "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Attack: %s \n🍀Luck: %s | 🖐Deffence: %s" % (Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex)
 		print(add_data, Data)
 		print(Data)
 		cursor.execute(add_data, Data)
@@ -99,6 +99,54 @@ async def CreateRecord(Name):
 		msg = "Character already created ! use $info"	
 	cnx.close()	
 	return msg
+
+async def GetLocation(Name):
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	table = "stats"
+	sql = "SELECT * FROM %s "" WHERE name = '%s'" % (Table, Name)		
+	cursor.execute(sql)
+	output = cursor.fetchall()
+	count = len(output)
+	for row in output:
+		ID = row[0]
+		Name = row[1]
+		Level = row[2]
+		Exp = row[3]
+		Hp = row[4]
+		MaxHp = row[5]
+		Const = row[6]
+		Str = row[7]
+		Intel = row[8]
+		Dex = row[9]
+		location = row[10]
+		coins = row[11]
+	print(count)
+	return location
+
+async def GetCoins(Name):
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	table = "stats"
+	sql = "SELECT * FROM %s "" WHERE name = '%s'" % (Table, Name)		
+	cursor.execute(sql)
+	output = cursor.fetchall()
+	count = len(output)
+	for row in output:
+		ID = row[0]
+		Name = row[1]
+		Level = row[2]
+		Exp = row[3]
+		Hp = row[4]
+		MaxHp = row[5]
+		Const = row[6]
+		Str = row[7]
+		Intel = row[8]
+		Dex = row[9]
+		location = row[10]
+		coins = row[11]
+	print(count)
+	return coins
 
 async def DownloadFullRecord(Name, Table):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)

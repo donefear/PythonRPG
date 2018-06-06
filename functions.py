@@ -122,7 +122,7 @@ async def levelup(Playername,bot, channelid):
 	while Reactioncheck == True :
 		def check(reaction, user):
 			e = str(reaction.emoji)
-			return e.startswith(('💪','❤','🤓','🖐'))
+			return e.startswith(('💪','❤','🍀','🖐'))
 		res = await bot.wait_for_reaction(message=msg, check=check)
 		#await bot.send_message(message.channel, '{0.user} reacted with {0.reaction.emoji}!'.format(res))
 		emoji = "{0.reaction.emoji}".format(res)
@@ -149,7 +149,7 @@ async def levelup(Playername,bot, channelid):
 			elif emoji == "❤":
 				await database.IncrementFieldByValue(Playername, "stats", "Const", 1)
 				await bot.send_message(channelid, "You have chosen to upgrade your constitution.")		
-			elif emoji == "🤓":
+			elif emoji == "🍀":
 				await database.IncrementFieldByValue(Playername, "stats", "Intel", 1)
 				await bot.send_message(channelid, "You have chosen to upgrade your intelligence.")		
 			elif emoji == "🖐":
@@ -186,7 +186,15 @@ async def Rest(PlayerName):
 	msg = "The sun rises and you feel refreshed after a nice night rest."
 	return msg
 
+async def Robbed(PlayerName):
+	return msg
+
 async def Brothel(PlayerName):
+	Dice = random.randint(1, 2)
+	if Dice == 1:
+		Rest(PlayerName)
+	else:
+		Robbed(PlayerName)
 	return msg
 
 async def Gamble(PlayerName):
@@ -195,7 +203,7 @@ async def Gamble(PlayerName):
 async def Shop(PlayerName):
 	return msg 
 
-async def Forrest(PlayerName):
+async def forest(PlayerName):
 	return msg
 
 async def Sewer(PlayerName):
