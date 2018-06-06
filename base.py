@@ -11,6 +11,13 @@ import debug
 import configparser
 import database
 import rndchatcommands
+############LOADING CONFIG FILES ##################
+config = configparser.ConfigParser()
+config.read(['config.ini', 'persontoken.ini', 'prices.ini'])
+DBToken = config['Bot-Token']
+prices = config['Tavern']
+token = DBToken['token']
+###################################################
 from time import gmtime, strftime
 cdate = strftime("GMT %m/%d/%Y", gmtime())
 Client = discord.Client()
@@ -40,7 +47,7 @@ async def on_message(message):
 	if message.content == "$create":
 		await bot.send_message(message.channel, "Character being created...")
 		Name = str(message.author)
-		msg = database.CreateRecord(Name)
+		msg = await database.CreateRecord(Name)
 		await bot.send_message(message.channel, msg)
 
 	elif message.content == "$info":
@@ -62,8 +69,10 @@ async def on_message(message):
 				Str = row[7]
 				Intel = row[8]
 				Dex = row[9]
+				Location = row[10]
+				Coins = row[11]
 				# Now print fetched result'💪','❤','🤓','🖐'
-				await bot.send_message(message.channel, "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Attack: %s \n🍀Luck^: %s | 🖐Defence: %s" % (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex))	
+				await bot.send_message(message.channel, "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Attack: %s \n🍀Luck^: %s | 🖐Defence: %s\n🗺Location: %s  | 💰Coins: %s" % (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex, Location , Coins))	
 
 	elif message.content == ("$exp"):
 		await debug.expdebug(bot, message.channel, message.author)
@@ -72,28 +81,52 @@ async def on_message(message):
 		user = message.author
 		await bot.send_message(message.channel, "You walk in town and see some trees in the distance to your left where there is a vast `$forest`. \nIn front of you there's an old but cozy `$tavern` with a `$blacksmith` annexing it. \nBehind the Tavern you notice a range of `$mountains` in the distance. \nTo your right you see an old run down `$shop` with an entrance to the `$sewer` next to it.")
 		place = "town"
-		await database.UpdateField(user, "stats", "location", place)
+		await database.UpdateLocation(user,place)
 
 	elif message.content == ("$tavern"):
 		user = message.author
 		await bot.send_message(message.channel, 'Welcome %s how can i help you ?' % (user))
 		await bot.send_message(message.channel, "I could offer you a nice bedroom to `$sleep` , Or if you're not tired, \ndownstairs we have a room to `$gamble` , or maybe the `$brothel` is more your style? \nWe have a fine selection of beautiful women.")
 		place = "tavern"
-		await database.UpdateField(user, "stats", "location", place)
+		await database.UpdateLocation(user, place)
 	
 	elif message.content == ("$sleep"): 
 		user = message.author
-		location = database.GetLocation(user)
+		location = await database.GetLocation(user)
+		print(location)
 		if str(location) == "tavern":
-			msg = await functions.Rest(user)
-			await bot.send_message(message.channel, msg)
+			price = float(prices['sleep'])
+			print(price)
+			UserCoins = await database.GetCoins(user)
+			if UserCoins >= price :
+				msg = await functions.Rest(user)
+				await bot.send_message(message.channel, msg)
+				purse = UserCoins - price
+				await database.UpdateField(Name, 'stats', 'coins', purse)
+			else:
+				await bot.send_message(message.channel, "Got no coin, a'right then... You can sleep there.... *Gestures to the door.*")
 		else:
-			await bot.send_message(message.channel, "Why do you try to sleep here ? you are nowhere near a tavern/bed!")
-
-	elif message.content == ("$gamble"): 
-		user = message.author
+			await bot.send_message(message.channel, "Why do you try to sleep here ? You are nowhere near a tavern/bed!")
 
 	elif message.content == ("$brothel"): 
+		user = message.author
+		location = await database.GetLocation(user)
+		print(location)
+		if str(location) == "tavern":
+			price = float(prices['brothel'])
+			print(price)
+			UserCoins = await database.GetCoins(user)
+			if UserCoins >= price :
+				msg = await functions.Brothel(user)
+				await bot.send_message(message.channel, msg)
+				purse = UserCoins - price
+				await database.UpdateField(user, 'stats', 'coins', purse)
+			else:
+				await bot.send_message(message.channel, "*She looks at you and laughs* Go somewhere else scumbag")
+		else:
+			await bot.send_message(message.channel, "*You look around confussed* there are no ladies of the night here.....\nperhaps at the tavern there might be some")
+
+	elif message.content == ("$gamble"): 
 		user = message.author
 
 	elif message.content == ("$shop"): 
@@ -104,12 +137,25 @@ async def on_message(message):
 
 	elif message.content == ("$sewer"): 
 		user = message.author
+		await bot.send_message(message.channel, "You open an old squeeky metal door into the sewers" )
+		place = "sewer"
+		await database.UpdateLocation(user, place)
+		await functions.battle(user,place,message.channel,bot)
+
 
 	elif message.content == ("$forest"): 
 		user = message.author
+		await bot.send_message(message.channel, "You start walking towards the forest in the distance\nonce you arrive in the forrest you are glad for the shade of the tall trees" )
+		place = "forest"
+		await database.UpdateLocation(user, place)
+		await functions.battle(user,place,message.channel,bot)
 
 	elif message.content == ("$mountains"): 
 		user = message.author
+		await bot.send_message(message.channel, "You grab your climbing gear and head of to the mountains" )
+		place = "mountains"
+		await database.UpdateLocation(user, place)
+		await functions.battle(user,place,message.channel,bot)
 
 	elif message.content.startswith("$duel"):
 		active = 1
@@ -177,9 +223,6 @@ async def on_message(message):
 # file = open('token.txt', 'r')
 # bot.run(file.read())
 
-config = configparser.ConfigParser()
-config.read(['config.ini', 'persontoken.ini'])
-DBToken = config['Bot-Token']
-token = DBToken['token']
+
 bot.run(token)
 cnx.close()

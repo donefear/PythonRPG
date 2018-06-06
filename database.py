@@ -1,5 +1,6 @@
 import mysql.connector
 import configparser
+import random
 
 config = configparser.ConfigParser()
 config.read(['config.ini', 'persontoken.ini'])
@@ -74,7 +75,6 @@ token_host = DBToken['host']
 async def CreateRecord(Name):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	Name = str(message.author)
 	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
 	cursor.execute(sql)
 	results = cursor.fetchall()	
@@ -88,8 +88,8 @@ async def CreateRecord(Name):
 		Exp = 0 
 		MaxHp = 10+Const*Level
 		Hp = MaxHp
-		add_data = ("INSERT INTO stats (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex) ""VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)")
-		Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)
+		add_data = ("INSERT INTO stats (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex , coins) ""VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s ,%s)")
+		Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex, 10)
 		msg =  "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Attack: %s \n🍀Luck: %s | 🖐Deffence: %s" % (Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex)
 		print(add_data, Data)
 		print(Data)
@@ -101,13 +101,13 @@ async def CreateRecord(Name):
 	return msg
 
 async def GetLocation(Name):
+	print("connecting to database")
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	table = "stats"
-	sql = "SELECT * FROM %s "" WHERE name = '%s'" % (Table, Name)		
+	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)		
 	cursor.execute(sql)
-	output = cursor.fetchall()
-	count = len(output)
+	output = cursor.fetchall()	
+	print(output)
 	for row in output:
 		ID = row[0]
 		Name = row[1]
@@ -121,17 +121,18 @@ async def GetLocation(Name):
 		Dex = row[9]
 		location = row[10]
 		coins = row[11]
-	print(count)
+	cnx.commit()
+	cnx.close()
 	return location
 
 async def GetCoins(Name):
+	print("connecting to database")
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	table = "stats"
-	sql = "SELECT * FROM %s "" WHERE name = '%s'" % (Table, Name)		
-	cursor.execute(sql)
+	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)		
+	cursor.execute(sql)	
 	output = cursor.fetchall()
-	count = len(output)
+	print(output)
 	for row in output:
 		ID = row[0]
 		Name = row[1]
@@ -145,7 +146,8 @@ async def GetCoins(Name):
 		Dex = row[9]
 		location = row[10]
 		coins = row[11]
-	print(count)
+	cnx.commit()
+	cnx.close()
 	return coins
 
 async def DownloadFullRecord(Name, Table):
@@ -157,6 +159,15 @@ async def DownloadFullRecord(Name, Table):
 	cnx.commit()
 	cnx.close()
 	return output
+
+async def UpdateLocation(Name,Value):
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = "UPDATE stats SET location = '%s' WHERE name = '%s'" % (str(Value), Name)
+	print("updating location with %s" % (Value))
+	cursor.execute(sql)
+	cnx.commit()
+	cnx.close()
 
 async def UpdateField(Name, Table, Field, Value):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)

@@ -100,5 +100,8 @@ $rpg
 	gamble
 		dice game 
 		higher lower game
+		goblin fight
 	rest
 		heal hp in tavern for ....currency
+
+

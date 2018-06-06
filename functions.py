@@ -3,8 +3,106 @@ import mysql.connector
 import time
 import random
 import database
+import configparser
+
 from time import gmtime, strftime
 cdate = strftime("GMT %m/%d/%Y", gmtime())
+
+
+
+async def battle(Name,location,channelid,bot):
+	#get info of the player
+	mob = 'potato'
+	UserData = await database.DownloadFullRecord(Name, 'stats')
+	for row in UserData:
+			ID = row[0]
+			Name = row[1]
+			Level = row[2]
+			Exp = row[3]
+			Hp = row[4]
+			MaxHp = row[5]
+			Const = row[6]
+			Str = row[7]
+			Intel = row[8]
+			Dex = row[9]
+			coins = row[11]
+	#get info of the monster
+	if location == 'sewer':
+		print('location = %s' % (location))
+		dice = random.randint(1,2)
+		if dice == 1:
+			mob = 'rat'
+		elif dice == 2:
+			mob = 'goblin'
+	elif location == 'forest':
+		print('location = %s' % (location))
+		dice = random.randint(1,4)
+		if dice == 1:
+			mob = 'wolf'
+		elif dice == 2:
+			mob = 'tree-ent'
+		elif dice == 3:
+			mob = 'bear'
+		elif dice == 4:
+			mob = 'troll'
+	elif location == 'mountains':
+		print('location = %s' % (location))
+		dice = random.randint(1,3)
+		if dice == 1:
+			mob = 'eagle'
+		elif dice == 2:
+			mob = 'mountain-lion'
+		elif dice == 3:
+			mob = 'golem'
+	config = configparser.ConfigParser()
+	config.read(['config.ini', 'persontoken.ini', 'monsters.ini'])
+	Monster  = config['%s' % (mob)]
+	MonsterName = Monster['Name']
+	MonsterHp = float(Monster['Hp']) * MaxHp
+	MonsterAttack = float(Monster['Attack']) * Str
+	MonsterDeffence = float(Monster['Deffence']) * Dex
+	MonsterCoins = float(Monster['Coins'])
+	####actual combat
+	await bot.send_message(channelid, "You run into a %s\n it look vicious and you ready for combat" % (MonsterName))
+	PlayerData = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)
+	MonsterData = (MonsterName, 0, 0, MonsterHp, MonsterHp, 0, MonsterAttack, 0, MonsterDeffence)
+	# DefenderData = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
+	# AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
+	await asyncio.sleep(2)
+	coinwinner = 0
+	msg  = await bot.send_message(channelid, "%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (Name, Hp , MonsterName, MonsterHp))
+	print("HP : %s  HP : %s" % (Hp, MonsterHp))
+	while Hp > 0 and MonsterHp > 0 :	
+		print(coinwinner)
+		if coinwinner == 0 :
+			MonsterHp = combat(PlayerData , MonsterData)
+			coinwinner = 1
+			MonsterData = (MonsterName, 0, 0, MonsterHp, MonsterHp, 0, MonsterAttack, 0, MonsterDeffence)
+		else:
+			Hp = combat(MonsterData , PlayerData)
+			coinwinner = 0
+			PlayerData = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)			
+		await asyncio.sleep(1)
+		await bot.edit_message(msg,new_content="%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (Name, round(Hp) , MonsterName, round(MonsterHp)))
+	if Hp <=0 :
+		#PLAYER DEAD
+		winner = MonsterName
+		loser = Name
+		await bot.send_message(channelid,"The winner was @%s" % winner)
+		
+	else:
+		#PLAYER WIN
+		winner = Name
+		loser = MonsterName
+		await bot.send_message(channelid,"The winner was @%s" % winner)
+		await exp(winner, random.randint(9, 11), Exp, bot, channelid)
+		await database.UpdateField(Name, 'stats', 'Hp', round(Hp))
+		winnings = coins + MonsterCoins
+		await database.UpdateField(Name, 'stats', 'coins', winnings)
+
+
+	
+
 
 async def duel(message, challenger, target, channelid, bot):
 	if str(target) == str(challenger):
@@ -186,28 +284,45 @@ async def Rest(PlayerName):
 	msg = "The sun rises and you feel refreshed after a nice night rest."
 	return msg
 
-async def Robbed(PlayerName):
+async def Brothel(PlayerName):
+	Data = await database.DownloadFullRecord(PlayerName, 'stats')
+	count = len(Data)
+	for row in Data:
+		ID = row[0]
+		Name = row[1]
+		Level = row[2]
+		Exp = row[3]
+		Hp = row[4]
+		MaxHp = row[5]
+		Const = row[6]
+		Str = row[7]
+		Intel = row[8]
+		Dex = row[9]	
+	print(count)
+	Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)
+	if count == 0 :
+		await bot.send_message(channelid, "@%s ERROR : No character found please make a character with the '$create' command" % (PlayerName))
+	else:
+		await  database.UpdateField(PlayerName, "stats", "Hp", MaxHp+5)
+	Luck = random.randint(1,6)
+	print("luck = %s" % (Luck))
+	if Luck == 6 or Luck == 1 :
+		await Robbed(PlayerName)
+		msg = "I had a good night, hope I didn't catch anything though...\nHmm my pockets feel lighter."
+	else:
+		msg = "I had a good night, hope I didn't catch anything though..."
 	return msg
 
-async def Brothel(PlayerName):
-	Dice = random.randint(1, 2)
-	if Dice == 1:
-		Rest(PlayerName)
-	else:
-		Robbed(PlayerName)
-	return msg
+async def Robbed(PlayerName):
+	UserCoins = await database.GetCoins(PlayerName)
+	purse = UserCoins - random.randint(1,5)
+	if purse < 0:
+		purse = 0
+	await database.UpdateField(PlayerName, 'stats', 'coins', purse)
+	return 
 
 async def Gamble(PlayerName):
 	return msg 
 
 async def Shop(PlayerName):
 	return msg 
-
-async def forest(PlayerName):
-	return msg
-
-async def Sewer(PlayerName):
-	return msg
-
-async def Mountain(PlayerName):
-	return msg
