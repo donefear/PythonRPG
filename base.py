@@ -72,10 +72,16 @@ async def on_message(message):
 				Location = row[10]
 				Coins = row[11]
 				# Now print fetched result'💪','❤','🤓','🖐'
-				await bot.send_message(message.channel, "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Attack: %s \n🍀Luck^: %s | 🖐Defence: %s\n🗺Location: %s  | 💰Coins: %s" % (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex, Location , Coins))	
+				await bot.send_message(message.channel, "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Attack: %s \n🍀Luck: %s | 🖐Defence: %s\n🗺Location: %s  | 💰Coins: %s" % (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex, Location , Coins))	
 
 	elif message.content == ("$exp"):
 		await debug.expdebug(bot, message.channel, message.author)
+
+	elif message.content == ("$help"):
+		await bot.send_message(message.channel, "Welcome to the RPG game by `DoneFear#0897` to get started use `$create` and `$town` to go to town \nYou can find your stats and info about your character with $info\nmore info about the bot and bug reports can be posted here : http://bit.ly/2LeiXLo")
+
+	elif message.content == ("$rpg"):
+		await bot.send_message(message.channel, "Welcome to the RPG game by `DoneFear#0897` to get started use `$create` and `$town` to go to town \nYou can find your stats and info about your character with $info\nmore info about the bot and bug reports can be posted here : http://bit.ly/2LeiXLo")
 
 	elif message.content == ("$town"):
 		user = message.author
@@ -87,6 +93,7 @@ async def on_message(message):
 		user = message.author
 		await bot.send_message(message.channel, 'Welcome %s how can i help you ?' % (user))
 		await bot.send_message(message.channel, "I could offer you a nice bedroom to `$sleep` , Or if you're not tired, \ndownstairs we have a room to `$gamble` , or maybe the `$brothel` is more your style? \nWe have a fine selection of beautiful women.")
+		await bot.send_message(message.channel, ' To the side of the desk you see a sign saying : Room : %s coins | lady of the night : %s coins' % (prices['sleep'],prices['brothel']))
 		place = "tavern"
 		await database.UpdateLocation(user, place)
 	
@@ -102,12 +109,22 @@ async def on_message(message):
 				msg = await functions.Rest(user)
 				await bot.send_message(message.channel, msg)
 				purse = UserCoins - price
-				await database.UpdateField(Name, 'stats', 'coins', purse)
+				await database.UpdateField(user, 'stats', 'coins', purse)
 			else:
-				await bot.send_message(message.channel, "Got no coin, a'right then... You can sleep there.... *Gestures to the door.*")
+				await bot.send_message(message.channel, "Got no coin, a'right then... You can sleep there.... *Gestures to the door leading outback into a `$stable`.*")
 		else:
 			await bot.send_message(message.channel, "Why do you try to sleep here ? You are nowhere near a tavern/bed!")
 
+	elif message.content == ("$stable"): 
+		user = message.author
+		location = await database.GetLocation(user)
+		print(location)
+		if str(location) == "tavern":
+			msg = await functions.RestStable(user)
+			await bot.send_message(message.channel, "*You lay down on some hay and try to get some sleep while eharing the drunks party in the night*")
+		else:
+			await bot.send_message(message.channel, "Why do you try to sleep here ? You are nowhere near a tavern/bed!")
+	
 	elif message.content == ("$brothel"): 
 		user = message.author
 		location = await database.GetLocation(user)
@@ -127,17 +144,20 @@ async def on_message(message):
 			await bot.send_message(message.channel, "*You look around confussed* there are no ladies of the night here.....\nperhaps at the tavern there might be some")
 
 	elif message.content == ("$gamble"): 
+		await bot.send_message(message.channel, "🚧🚧🚧UNDER CONSTRUCTION🚧🚧🚧" )
 		user = message.author
 
 	elif message.content == ("$shop"): 
+		await bot.send_message(message.channel, "🚧🚧🚧UNDER CONSTRUCTION🚧🚧🚧" )
 		user = message.author
 
 	elif message.content == ("$blacksmith"): 
+		await bot.send_message(message.channel, "🚧🚧🚧UNDER CONSTRUCTION🚧🚧🚧" )
 		user = message.author
 
 	elif message.content == ("$sewer"): 
 		user = message.author
-		await bot.send_message(message.channel, "You open an old squeeky metal door into the sewers" )
+		await bot.send_message(message.channel, "You open an old squeaky metal door into the sewers" )
 		place = "sewer"
 		await database.UpdateLocation(user, place)
 		await functions.battle(user,place,message.channel,bot)

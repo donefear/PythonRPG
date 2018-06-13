@@ -90,7 +90,7 @@ async def CreateRecord(Name):
 		Hp = MaxHp
 		add_data = ("INSERT INTO stats (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex , coins) ""VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s ,%s)")
 		Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex, 10)
-		msg =  "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Attack: %s \n🍀Luck: %s | 🖐Deffence: %s" % (Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex)
+		msg =  "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Attack: %s \n🍀Luck: %s | 🖐Defence: %s" % (Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex)
 		print(add_data, Data)
 		print(Data)
 		cursor.execute(add_data, Data)

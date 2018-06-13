@@ -40,7 +40,7 @@ async def battle(Name,location,channelid,bot):
 		if dice == 1:
 			mob = 'wolf'
 		elif dice == 2:
-			mob = 'tree-ent'
+			mob = 'ent'
 		elif dice == 3:
 			mob = 'bear'
 		elif dice == 4:
@@ -60,24 +60,24 @@ async def battle(Name,location,channelid,bot):
 	MonsterName = Monster['Name']
 	MonsterHp = float(Monster['Hp']) * MaxHp
 	MonsterAttack = float(Monster['Attack']) * Str
-	MonsterDeffence = float(Monster['Deffence']) * Dex
+	MonsterDefence = float(Monster['Defence']) * Dex
 	MonsterCoins = float(Monster['Coins'])
 	####actual combat
-	await bot.send_message(channelid, "You run into a %s\n it look vicious and you ready for combat" % (MonsterName))
+	await bot.send_message(channelid, "You run into a %s\nand it looks vicious and you're ready for combat" % (MonsterName))
 	PlayerData = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)
-	MonsterData = (MonsterName, 0, 0, MonsterHp, MonsterHp, 0, MonsterAttack, 0, MonsterDeffence)
+	MonsterData = (MonsterName, 0, 0, MonsterHp, MonsterHp, 0, MonsterAttack, 0, MonsterDefence)
 	# DefenderData = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
 	# AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
 	await asyncio.sleep(2)
 	coinwinner = 0
 	msg  = await bot.send_message(channelid, "%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (Name, Hp , MonsterName, MonsterHp))
 	print("HP : %s  HP : %s" % (Hp, MonsterHp))
-	while Hp > 0 and MonsterHp > 0 :	
+	while Hp > 1 and MonsterHp > 1 :	
 		print(coinwinner)
 		if coinwinner == 0 :
 			MonsterHp = combat(PlayerData , MonsterData)
 			coinwinner = 1
-			MonsterData = (MonsterName, 0, 0, MonsterHp, MonsterHp, 0, MonsterAttack, 0, MonsterDeffence)
+			MonsterData = (MonsterName, 0, 0, MonsterHp, MonsterHp, 0, MonsterAttack, 0, MonsterDefence)
 		else:
 			Hp = combat(MonsterData , PlayerData)
 			coinwinner = 0
@@ -214,7 +214,7 @@ async def exp(PlayerName, ExpAmount, PlayerExp, bot, channelid):
 	await database.UpdateField(PlayerName, "stats", "Exp", PlayerExp)
 
 async def levelup(Playername,bot, channelid):
-	msg = await bot.send_message(channelid, "------------------------------------------- \n Congratulations @%s you leveled up \n Please react with the corresponding emote to this message what you want to level up \n 💪 Strength \n ❤ Constitution \n 🤓 Intelligence \n 🖐 Dexterity" % (Playername))
+	msg = await bot.send_message(channelid, "------------------------------------------- \n Congratulations @%s you leveled up \n Please react with the corresponding emote to this message what you want to level up \n 💪 Attack \n ❤ Constitution \n 🍀 Luck \n 🖐 Defence" % (Playername))
 	# 💪❤🤓🖐
 	Reactioncheck = True
 	while Reactioncheck == True :
@@ -242,17 +242,17 @@ async def levelup(Playername,bot, channelid):
 		if str(emojiuser) == str(Playername):
 			if emoji == "💪":
 				# IncrementFieldByValue(Playername, Table, Field, Value):
-				await database.IncrementFieldByValue(PlayerPlayername, "stats", "Str", 1)
-				await bot.send_message(channelid, "You have chosen to upgrade your strength.")		
+				await database.IncrementFieldByValue(Playername, "stats", "Str", 1)
+				await bot.send_message(channelid, "You have chosen to upgrade your Attack.")		
 			elif emoji == "❤":
 				await database.IncrementFieldByValue(Playername, "stats", "Const", 1)
 				await bot.send_message(channelid, "You have chosen to upgrade your constitution.")		
 			elif emoji == "🍀":
 				await database.IncrementFieldByValue(Playername, "stats", "Intel", 1)
-				await bot.send_message(channelid, "You have chosen to upgrade your intelligence.")		
+				await bot.send_message(channelid, "You have chosen to upgrade your Luck.")		
 			elif emoji == "🖐":
 				await database.IncrementFieldByValue(Playername, "stats", "Dex", 1)
-				await bot.send_message(channelid, "You have chosen to upgrade your dexterity.")		
+				await bot.send_message(channelid, "You have chosen to upgrade your Defence.")		
 
 			await database.IncrementFieldByValue(Playername, "stats", "MaxHP", Const)
 			await database.IncrementFieldByValue(Playername, "stats", "HP", Const)
@@ -281,7 +281,30 @@ async def Rest(PlayerName):
 		await bot.send_message(channelid, "@%s ERROR : No character found please make a character with the '$create' command" % (PlayerName))
 	else:
 		await  database.UpdateField(PlayerName, "stats", "Hp", MaxHp)
-	msg = "The sun rises and you feel refreshed after a nice night rest."
+	msg = "The sun rises and you feel refreshed after a nice night's rest."
+	return msg
+
+async def RestStable(PlayerName):
+	Data = await database.DownloadFullRecord(PlayerName, 'stats')
+	count = len(Data)
+	for row in Data:
+		ID = row[0]
+		Name = row[1]
+		Level = row[2]
+		Exp = row[3]
+		Hp = row[4]
+		MaxHp = row[5]
+		Const = row[6]
+		Str = row[7]
+		Intel = row[8]
+		Dex = row[9]	
+	print(count)
+	Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)
+	if count == 0 :
+		await bot.send_message(channelid, "@%s ERROR : No character found please make a character with the '$create' command" % (PlayerName))
+	else:
+		await  database.UpdateField(PlayerName, "stats", "Hp", float(MaxHp/2))
+	msg = "You get kicked by a horse while sleeping and feel croggy and tired."
 	return msg
 
 async def Brothel(PlayerName):
