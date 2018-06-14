@@ -88,6 +88,7 @@ async def chat(message,channelid,bot):
 		info = await database.testrecord(name)
 		await bot.send_message(message.channel,"%s" % (info))
 
+
 	if message.content.startswith("$purge"):
 		author = message.author
 		#await bot.send_message(message.channel,"DEBUG:author :  %s " %  (author))

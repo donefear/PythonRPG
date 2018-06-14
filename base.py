@@ -17,6 +17,8 @@ config.read(['config.ini', 'persontoken.ini', 'prices.ini'])
 DBToken = config['Bot-Token']
 prices = config['Tavern']
 token = DBToken['token']
+Admins = config['Admin']
+AdminList = Admins['adminlist']
 ###################################################
 from time import gmtime, strftime
 cdate = strftime("GMT %m/%d/%Y", gmtime())
@@ -45,10 +47,52 @@ async def on_ready():
 async def on_message(message):
 
 	if message.content == "$create":
-		await bot.send_message(message.channel, "Character being created...")
 		Name = str(message.author)
-		msg = await database.CreateRecord(Name)
-		await bot.send_message(message.channel, msg)
+		stats = await database.CreateRecord(Name)
+		await bot.send_message(message.channel, stats)
+		text = ("Are you happy with these stats? React with 👍or👎.")
+		msg = await bot.send_message(message.channel, text)
+		for n in range(100):
+			def check(reaction, user):
+				e = str(reaction.emoji)
+				return e.startswith(('👍', '👎'))
+
+			res = await bot.wait_for_reaction(message=msg, check=check)
+			emoji = "{0.reaction.emoji}".format(res)
+			emojiuser = "{0.user}".format(res)
+
+			if str(emojiuser) == str(Name):
+				if emoji == "👍":
+					newmsg = "Welcome to world use `$town` to continue"
+					# await bot.send_message(message.channel,":+1: Accepted")
+					await bot.edit_message(msg,new_content=newmsg)
+							
+				elif emoji == "👎":
+					newmsg = "Rerolling  Stats..."
+					# await bot.send_message(message.channel,":-1: DENIED")
+					await bot.edit_message(msg,new_content=newmsg)					
+					stats,Const,Dex,Intel,Str,Level,Exp,MaxHp,Hp = await database.GenerateStats(Name)
+					stats = await database.CreateRecord(Name)
+					await database.UpdateField(Name, 'stats','Const', Const)
+					await database.UpdateField(Name, 'stats','Dex', Dex)
+					await database.UpdateField(Name, 'stats','Intel', Intel)
+					await database.UpdateField(Name, 'stats','Level', Level)
+					await database.UpdateField(Name, 'stats','MaxHp', MaxHp)
+					await database.UpdateField(Name, 'stats','Hp', Hp)
+					await database.UpdateField(Name, 'stats','Exp', Exp)
+					await database.UpdateField(Name, 'stats','Str', Str)
+
+				break
+			else:
+				async def clear(msg2):
+					print("waiting 2 sec")
+					await asyncio.sleep(2)
+					print("deleting msg")
+					await bot.delete_message(msg2)
+				msg2 = await bot.send_message(message.channel, "@%s .... why you response to this ......:unamused: " % (emojiuser))
+				await bot.clear_reactions(message=msg)
+				await clear(msg2)
+
 
 	elif message.content == "$info":
 		name = str(message.author)		
@@ -76,6 +120,26 @@ async def on_message(message):
 
 	elif message.content == ("$exp"):
 		await debug.expdebug(bot, message.channel, message.author)
+
+	elif message.content == ("$@reroll"):
+		user = message.author
+		Name = str(message.author)
+		count = AdminList.count(Name)
+		if count != 0:
+			stats,Const,Dex,Intel,Str,Level,Exp,MaxHp,Hp = await database.GenerateStats(user)
+			await bot.send_message(message.channel, stats)
+			await database.UpdateField(Name, 'stats','Const', Const)
+			await database.UpdateField(Name, 'stats','Dex', Dex)
+			await database.UpdateField(Name, 'stats','Intel', Intel)
+			await database.UpdateField(Name, 'stats','Level', Level)
+			await database.UpdateField(Name, 'stats','MaxHp', MaxHp)
+			await database.UpdateField(Name, 'stats','Hp', Hp)
+			await database.UpdateField(Name, 'stats','Exp', Exp)
+			await database.UpdateField(Name, 'stats','Str', Str)
+
+	elif message.content == ('$admins'):
+		await bot.send_message(message.channel, "The admins for the bot are : %s" % (AdminList))
+
 
 	elif message.content == ("$help"):
 		await bot.send_message(message.channel, "Welcome to the RPG game by `DoneFear#0897` to get started use `$create` and `$town` to go to town \nYou can find your stats and info about your character with $info\nmore info about the bot and bug reports can be posted here : http://bit.ly/2LeiXLo")
@@ -121,7 +185,7 @@ async def on_message(message):
 		print(location)
 		if str(location) == "tavern":
 			msg = await functions.RestStable(user)
-			await bot.send_message(message.channel, "*You lay down on some hay and try to get some sleep while eharing the drunks party in the night*")
+			await bot.send_message(message.channel, "*You lay down on some hay and try to get some sleep while hearing the drunks party in the night*")
 		else:
 			await bot.send_message(message.channel, "Why do you try to sleep here ? You are nowhere near a tavern/bed!")
 	

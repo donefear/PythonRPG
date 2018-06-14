@@ -3,74 +3,69 @@ import configparser
 import random
 
 config = configparser.ConfigParser()
-config.read(['config.ini', 'persontoken.ini'])
+config.read(['config.ini', 'persontoken.ini', 'monsters.ini'])
+Statsinfo = config['player']
 DBToken = config['MySQL']
 token_user = DBToken['user']
 token_password = DBToken['password']
 token_database = DBToken['database']
 token_host = DBToken['host']
-
-# import asyncio
-# import sqlalchemy
-# from sqlalchemy import create_engine
-# from sqlalchemy.orm import sessionmaker
-# from sqlalchemy.ext.declarative import declarative_base
-# Base = declarative_base()
-# from sqlalchemy import Column, Integer, String
-
-# Session = sessionmaker(bind=engine)
-# session = Session()
-
-# class User(Base):
-# 	__tablename__ = 'stats'
-
-# 	id = Column(Integer, primary_key=True)
-# 	Name = Column(String)
-# 	Level = Column(Integer)
-# 	Exp = Column(Integer)
-# 	Hp = Column(Integer)
-# 	MaxHp = Column(Integer)
-# 	Const = Column(Integer)
-# 	Str = Column(Integer)
-# 	Intel = Column(Integer)
-# 	Dex = Column(Integer)
-# 	def __repr__(self):
-# 		return "<User(Name='%s', Level='%s', Exp='%s', Hp='%s', MaxHp='%s', Const='%s', Str='%s', Intel='%s', Dex='%s')>" % (self.Name, self.Level, self.Exp, self.Hp, self.MaxHp, self.Const, self.Str, self.Intel, self.Dex)
+Maxstats = float(Statsinfo['MaxStats'])
 
 
-
-# async def testrecord(Name):
-# 	Db =  session.query(User).filter_by(Name=Name).first()
-# 	output = [[Db.id,Db.Name,Db.Level,Db.Exp,Db.Hp,Db.MaxHp,Db.Const,Db.Str,Db.Intel,Db.Dex]]
-# 	session.commit()
-# 	session.close()
-# 	print(output)
-# 	return output
-
-# async def DownloadFullRecord(Name):
-# 	Db =  session.query(User).filter_by(Name=str(Name)).first()
-# 	output = [[Db.id,Db.Name,Db.Level,Db.Exp,Db.Hp,Db.MaxHp,Db.Const,Db.Str,Db.Intel,Db.Dex]]
-# 	return output
-
-# async def UpdateField(Name, Table, Field, Value):
-# 	# Update =  session.query(User).filter_by(Name=str(Name)).first()
-# 	strField = str(Field)
-# 	strField = Value
-# 	print("field : %s , value : %s" % (str(Field),Value))
-# 	print(session.dirty)
-# 	session.commit()
-# 	session.close()
-
-# async def UpdateFieldByValue(Name, Table, Field, Value):
-# 	print("updating databse")
-# 	Db =  session.query(User).filter_by(Name=str(Name)).first()
-# 	DbField = "Db.%s" % (Field)
-# 	Update = "%s = %s + %s " % (DbField, DbField , Value)
-# 	print("updating :::::: %s" % (Update))
-# 	Update
-# 	print(session.dirty)
-# 	session.commit()
-# 	session.close()	
+async def GenerateStats(Name):
+	Const = random.randint(3, 8)
+	Str = random.randint(3,8)
+	Intel = random.randint(3,8)
+	Dex = random.randint(3,8)	
+	Count = {'Const':Const, 'Str':Str, 'Intel':Intel, 'Dex':Dex}
+	CurrentStats = Const + Str + Intel + Dex
+	while CurrentStats < Maxstats:
+		# These are all your stats
+		keys = ['Const', 'Str', 'Intel', 'Dex']
+		# Stupid high because we want all possible stats to be lower than this
+		target = Maxstats
+		# Start empty, or you can give it a default
+		lowkey = ''
+		# for each key 
+		key = keys[(random.randint(0,3))]
+		# for key in keys: 
+			# If this value is lower than the target, say this is the lowest value
+		if Count[key] < target:
+		# Save our new target. We need to get lower than this now.
+			target = Count[key]
+			# For when we are done, this is what we need to increment.
+			lowkey = key
+			# lowkey is now your lowest value. Add one to that
+			Count[lowkey] += 1
+			# Increment your total as well
+			CurrentStats += 1
+		
+	while CurrentStats > Maxstats:
+		# These are all your stats
+		keys = ['Const', 'Str', 'Intel', 'Dex']
+		# Stupid high because we want all possible stats to be lower than this
+		target = 0
+		# Start empty, or you can give it a default
+		highkey = ''
+		# for each key 
+		for key in keys:
+			if Count [key] > target:
+				target = Count[key]
+				highkey = key
+		Count[highkey] -= 1
+		CurrentStats -= 1
+	#reasigning stats
+	Const = Count['Const']
+	Dex = Count['Dex']
+	Intel = Count['Intel']
+	Str = Count['Str']
+	Level = 1
+	Exp = 0 
+	MaxHp = 10+Const
+	Hp = MaxHp
+	msg =  "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Attack: %s \n🍀Luck: %s | 🖐Defence: %s" % (Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex)
+	return msg,Const,Dex,Intel,Str,Level,Exp,MaxHp,Hp
 
 async def CreateRecord(Name):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
@@ -80,23 +75,17 @@ async def CreateRecord(Name):
 	results = cursor.fetchall()	
 	count = cursor.rowcount		
 	if count == 0:
-		Const = random.randint(1, 10)
-		Str = random.randint(1, 10)
-		Intel = random.randint(1, 10)
-		Dex = random.randint(1, 10)		
-		Level = 1
-		Exp = 0 
-		MaxHp = 10+Const*Level
-		Hp = MaxHp
+		msg,Const,Dex,Intel,Str,Level,Exp,MaxHp,Hp = await GenerateStats(Name)
+
 		add_data = ("INSERT INTO stats (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex , coins) ""VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s ,%s)")
 		Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex, 10)
-		msg =  "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Attack: %s \n🍀Luck: %s | 🖐Defence: %s" % (Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex)
+		
 		print(add_data, Data)
 		print(Data)
 		cursor.execute(add_data, Data)
 		cnx.commit()
 	else:
-		msg = "Character already created ! use $info"	
+		msg = "Character already created! use $info"	
 	cnx.close()	
 	return msg
 
@@ -149,6 +138,23 @@ async def GetCoins(Name):
 	cnx.commit()
 	cnx.close()
 	return coins
+
+async def RerollStats(Name, Data):
+	Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex, 10)
+	for row in output:
+		Name = row[0]
+		Level = row[1]
+		Exp = row[2]
+		Hp = row[3]
+		MaxHp = row[4]
+		Const = row[6]
+		Str = row[7]
+		Intel = row[8]
+		Dex = row[9]
+		location = row[10]
+		coins = row[11]
+
+	
 
 async def DownloadFullRecord(Name, Table):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)

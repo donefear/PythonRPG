@@ -83,7 +83,7 @@ async def battle(Name,location,channelid,bot):
 			coinwinner = 0
 			PlayerData = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)			
 		await asyncio.sleep(1)
-		await bot.edit_message(msg,new_content="%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (Name, round(Hp) , MonsterName, round(MonsterHp)))
+		await bot.edit_message(msg,new_content="%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (Name, round(Hp+0.5) , MonsterName, round(MonsterHp+0.5)))
 	if Hp <=0 :
 		#PLAYER DEAD
 		winner = MonsterName
@@ -96,7 +96,7 @@ async def battle(Name,location,channelid,bot):
 		loser = MonsterName
 		await bot.send_message(channelid,"The winner was @%s" % winner)
 		await exp(winner, random.randint(9, 11), Exp, bot, channelid)
-		await database.UpdateField(Name, 'stats', 'Hp', round(Hp))
+		await database.UpdateField(Name, 'stats', 'Hp', round(Hp+0.5))
 		winnings = coins + MonsterCoins
 		await database.UpdateField(Name, 'stats', 'coins', winnings)
 
