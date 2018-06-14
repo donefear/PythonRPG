@@ -72,7 +72,7 @@ async def on_message(message):
 					# await bot.send_message(message.channel,":-1: DENIED")
 					await bot.edit_message(msg,new_content=newmsg)					
 					stats,Const,Dex,Intel,Str,Level,Exp,MaxHp,Hp = await database.GenerateStats(Name)
-					stats = await database.CreateRecord(Name)
+					await bot.send_message(message.channel, stats)
 					await database.UpdateField(Name, 'stats','Const', Const)
 					await database.UpdateField(Name, 'stats','Dex', Dex)
 					await database.UpdateField(Name, 'stats','Intel', Intel)

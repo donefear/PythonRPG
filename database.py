@@ -20,41 +20,26 @@ async def GenerateStats(Name):
 	Dex = random.randint(3,8)	
 	Count = {'Const':Const, 'Str':Str, 'Intel':Intel, 'Dex':Dex}
 	CurrentStats = Const + Str + Intel + Dex
+	keys = ['Const', 'Str', 'Intel', 'Dex']
 	while CurrentStats < Maxstats:
-		# These are all your stats
-		keys = ['Const', 'Str', 'Intel', 'Dex']
-		# Stupid high because we want all possible stats to be lower than this
-		target = Maxstats
-		# Start empty, or you can give it a default
-		lowkey = ''
-		# for each key 
 		key = keys[(random.randint(0,3))]
 		# for key in keys: 
 			# If this value is lower than the target, say this is the lowest value
-		if Count[key] < target:
-		# Save our new target. We need to get lower than this now.
-			target = Count[key]
-			# For when we are done, this is what we need to increment.
-			lowkey = key
-			# lowkey is now your lowest value. Add one to that
-			Count[lowkey] += 1
+		if Count[key] < 8:		
+			Count[key] += 1
 			# Increment your total as well
 			CurrentStats += 1
-		
 	while CurrentStats > Maxstats:
-		# These are all your stats
-		keys = ['Const', 'Str', 'Intel', 'Dex']
-		# Stupid high because we want all possible stats to be lower than this
-		target = 0
-		# Start empty, or you can give it a default
-		highkey = ''
-		# for each key 
-		for key in keys:
-			if Count [key] > target:
-				target = Count[key]
-				highkey = key
-		Count[highkey] -= 1
-		CurrentStats -= 1
+		key = keys[(random.randint(0,3))]
+		if Count[key] > 3:
+			Count[key] -= 1 
+			CurrentStats -= 1
+	while Const == Str == Dex == Intel == 5:
+		key1 == keys[(random.randint(0,3))]
+		key2 == keys[(random.randint(0,3))]
+		if key1 != key2:
+			key1 += 1
+			key2 -= 1
 	#reasigning stats
 	Const = Count['Const']
 	Dex = Count['Dex']
