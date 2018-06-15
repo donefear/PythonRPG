@@ -7,8 +7,8 @@ import configparser
 
 from time import gmtime, strftime
 cdate = strftime("GMT %m/%d/%Y", gmtime())
-
-
+config = configparser.ConfigParser()
+config.read(['config.ini', 'persontoken.ini', 'monsters.ini'])
 
 async def battle(Name,location,channelid,bot):
 	#get info of the player
@@ -27,41 +27,21 @@ async def battle(Name,location,channelid,bot):
 			Dex = row[9]
 			coins = row[11]
 	#get info of the monster
-	if location == 'sewer':
-		print('location = %s' % (location))
-		dice = random.randint(1,2)
-		if dice == 1:
-			mob = 'rat'
-		elif dice == 2:
-			mob = 'goblin'
-	elif location == 'forest':
-		print('location = %s' % (location))
-		dice = random.randint(1,4)
-		if dice == 1:
-			mob = 'wolf'
-		elif dice == 2:
-			mob = 'ent'
-		elif dice == 3:
-			mob = 'bear'
-		elif dice == 4:
-			mob = 'troll'
-	elif location == 'mountains':
-		print('location = %s' % (location))
-		dice = random.randint(1,3)
-		if dice == 1:
-			mob = 'eagle'
-		elif dice == 2:
-			mob = 'mountain-lion'
-		elif dice == 3:
-			mob = 'golem'
-	config = configparser.ConfigParser()
-	config.read(['config.ini', 'persontoken.ini', 'monsters.ini'])
-	Monster  = config['%s' % (mob)]
-	MonsterName = Monster['Name']
-	MonsterHp = float(Monster['Hp']) * MaxHp
-	MonsterAttack = float(Monster['Attack']) * Str
-	MonsterDefence = float(Monster['Defence']) * Dex
-	MonsterCoins = float(Monster['Coins'])
+	print('location = %s' % (location))
+	area = config['%s' % (location)]
+	moblist = area['monster']
+	print(moblist)
+	roll = (random.randint(0,(len(moblist)-1)))
+	print(roll)
+	mob = config['%s%s' % (location , roll)]
+	print(mob)
+	MonsterName = mob['Name']
+	MonsterHp = int(mob['Hp'])
+	MonsterAttack = int(mob['Attack'])
+	MonsterDefence = int(mob['Defence'])
+	MonsterCoins = int(mob['Coins'])
+		
+	
 	####actual combat
 	await bot.send_message(channelid, "You run into a %s\nand it looks vicious and you're ready for combat" % (MonsterName))
 	PlayerData = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)
@@ -106,7 +86,7 @@ async def battle(Name,location,channelid,bot):
 
 async def duel(message, challenger, target, channelid, bot):
 	if str(target) == str(challenger):
-		await bot.send_message(channelid, "FUCK YOU CHEATER GO SELFHARM SOMEWHERE ELSE")
+		await bot.send_message(channelid, "No you can't duel yourself, try duelling another player instead")
 	else:
 		print(str(challenger) + str(target))
 		print("FIGHT")
@@ -345,7 +325,60 @@ async def Robbed(PlayerName):
 	return 
 
 async def Gamble(PlayerName):
+	await bot.send_message(channelid,)
+	UserCoins = await database.GetCoins(PlayerName)
 	return msg 
 
 async def Shop(PlayerName):
 	return msg 
+
+async def Roulette(Playername,Value,Bet):
+	roll = random.randint(0,36)
+	Bet = int(Bet)
+	print(roll)
+	Winnings = 0
+	color = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35]
+	if Value == 37 or Value == 38:
+		if color.count(roll) == 1:
+			colour1 = 'black'
+			print(colour1)
+		else:
+			colour1 = 'red'
+			print(colour1)
+		if Value == 37:
+			Pick = 'black'
+			print(Pick)
+		else:
+			Pick = 'red'
+			print(Pick)
+		if colour1 == Pick:
+			Winnings = Bet*2
+			msg = "The wheel slows down and the ball lands on %s and double your winnings" % (roll)
+	elif Value == 39 or Value == 40:
+		if roll % 2 == 0:
+			num = 'even'
+			print(num)
+		else:
+			num = 'odd'
+			print(num)
+		if Value == 38:
+			Pick = 'even'
+			print(Pick)
+		else:
+			Pick = 'odd'
+			print(Pick)
+		if num == Value:
+			Winnings = Bet*2
+			msg = "The wheel slows down and the ball lands on %s and double your winnings" % (roll) 
+	elif Value == roll == 0:
+		print(Value)
+		Winnings = Bet*6
+		msg = "The wheel slows down and the ball lands on %s and sixtruple your winnings" % (roll)		
+	elif Value == roll:
+		print(Value)
+		Winnings = Bet*4
+		msg = "The wheel slows down and the ball lands on %s and quatruple your winnings" % (roll) 
+	else:
+		msg = "The wheel slows down and the ball lands on %s YOU LOSE" % (roll)
+		Winnings -= Bet
+	return msg,Winnings
