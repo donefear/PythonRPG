@@ -117,3 +117,5 @@ async def chat(message,channelid,bot):
 		Name = message.author
 		await bot.start_private_message(Name)
 		await bot.send_message(Name, "PONG")
+
+	

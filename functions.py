@@ -8,7 +8,7 @@ import configparser
 from time import gmtime, strftime
 cdate = strftime("GMT %m/%d/%Y", gmtime())
 config = configparser.ConfigParser()
-config.read(['config.ini', 'persontoken.ini', 'monsters.ini'])
+config.read(['config.ini', 'persontoken.ini', 'monsters.ini','prices.ini'])
 
 async def battle(Name,location,channelid,bot):
 	#get info of the player
@@ -337,14 +337,26 @@ async def Roulette(Playername,Value,Bet):
 	Bet = int(Bet)
 	print(roll)
 	Winnings = 0
+	msg = ""
+	#wich numbers are black
 	color = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35]
-	if Value == 37 or Value == 38:
-		if color.count(roll) == 1:
-			colour1 = 'black'
-			print(colour1)
-		else:
-			colour1 = 'red'
-			print(colour1)
+	#cheeck if roll is even or odd
+	if roll % 2 == 0:
+		num = 'even'
+		print(num)
+	else:
+		num = 'odd'
+		print(num)
+	#check if roll is a black or red number
+	if color.count(roll) == 1:
+		colour1 = 'black'
+		print(colour1)
+	else:
+		colour1 = 'red'
+		print(colour1)
+	output = colour1+str(roll)+num
+	#checking the bet player placed
+	if Value == 37 or Value == 38:		
 		if Value == 37:
 			Pick = 'black'
 			print(Pick)
@@ -353,14 +365,8 @@ async def Roulette(Playername,Value,Bet):
 			print(Pick)
 		if colour1 == Pick:
 			Winnings = Bet*2
-			msg = "The wheel slows down and the ball lands on %s and double your winnings" % (roll)
+			msg = "The wheel slows down and the ball lands on `%s` and double your winnings" % (output)
 	elif Value == 39 or Value == 40:
-		if roll % 2 == 0:
-			num = 'even'
-			print(num)
-		else:
-			num = 'odd'
-			print(num)
 		if Value == 38:
 			Pick = 'even'
 			print(Pick)
@@ -369,16 +375,42 @@ async def Roulette(Playername,Value,Bet):
 			print(Pick)
 		if num == Value:
 			Winnings = Bet*2
-			msg = "The wheel slows down and the ball lands on %s and double your winnings" % (roll) 
+			msg = "The wheel slows down and the ball lands on `%s` and double your winnings" % (output) 
 	elif Value == roll == 0:
 		print(Value)
 		Winnings = Bet*6
-		msg = "The wheel slows down and the ball lands on %s and sixtruple your winnings" % (roll)		
+		msg = "The wheel slows down and the ball lands on `%s` and sixtruple your winnings" % (output)		
 	elif Value == roll:
 		print(Value)
 		Winnings = Bet*4
-		msg = "The wheel slows down and the ball lands on %s and quatruple your winnings" % (roll) 
+		msg = "The wheel slows down and the ball lands on `%s` and quatruple your winnings" % (output) 
 	else:
-		msg = "The wheel slows down and the ball lands on %s YOU LOSE" % (roll)
+		msg = "The wheel slows down and the ball lands on `%s` YOU LOSE" % (output)
 		Winnings -= Bet
+	return msg,Winnings
+
+async def TenK(Dice):
+	prize = config['TenK']
+	#Dice = array of rolls 1,5,5,5,6,4
+	Winnings = 0
+	msg = ''
+	for x in Dice:
+		if Dice == 12345:
+			Winnings = prize['Straight']
+			msg = "You won %s!" % (Winnings)
+		elif Dice.count(x) == 3:
+			Winnings = prize['%sx%s' % (Dice.count(x),x)]
+			msg = "You won %s!" % (Winnings)
+		elif Dice.count(x) == 4:
+			Winnings = prize['%sx%s' % (Dice.count(x),x)]
+			msg = "You won %s!" % (Winnings)
+		elif Dice.count(x) == 5:
+			Winnings = prize['%sx%s' % (Dice.count(x),x)]
+			msg = "You won %s!" % (Winnings)
+		elif Dice.count(x) == 6:
+			Winnings = prize['%sx%s' % (Dice.count(x),x)]
+			msg = "You won %s!" % (Winnings)
+		else:
+			msg = "You lost !"
+		print('%sx%s' % (Dice.count(x),x))
 	return msg,Winnings

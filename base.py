@@ -94,7 +94,7 @@ async def on_message(message):
 				await clear(msg2)
 
 
-	if message.content == "$info":
+	elif message.content == "$info":
 		name = str(message.author)		
 		Data = await database.DownloadFullRecord(name, "stats")	
 		count = len(Data)
@@ -118,10 +118,10 @@ async def on_message(message):
 				# Now print fetched result'💪','❤','🤓','🖐'
 				await bot.send_message(message.channel, "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Attack: %s \n🍀Luck: %s | 🖐Defence: %s\n🗺Location: %s  | 💰Coins: %s" % (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex, Location , Coins))	
 
-	if message.content == ("$exp"):
+	elif message.content == ("$exp"):
 		await debug.expdebug(bot, message.channel, message.author)
 
-	if message.content == ("$@reroll"):
+	elif message.content == ("$@reroll"):
 		user = message.author
 		Name = str(message.author)
 		count = AdminList.count(Name)
@@ -137,23 +137,23 @@ async def on_message(message):
 			await database.UpdateField(Name, 'stats','Exp', Exp)
 			await database.UpdateField(Name, 'stats','Str', Str)
 
-	if message.content == ('$admins'):
+	elif message.content == ('$admins'):
 		await bot.send_message(message.channel, "The admins for the bot are : %s" % (AdminList))
 
 
-	if message.content == ("$help"):
+	elif message.content == ("$help"):
 		await bot.send_message(message.channel, "Welcome to the RPG game by `DoneFear#0897` to get started use `$create` and `$town` to go to town \nYou can find your stats and info about your character with $info\nmore info about the bot and bug reports can be posted here : http://bit.ly/2LeiXLo")
 
-	if message.content == ("$rpg"):
+	elif message.content == ("$rpg"):
 		await bot.send_message(message.channel, "Welcome to the RPG game by `DoneFear#0897` to get started use `$create` and `$town` to go to town \nYou can find your stats and info about your character with $info\nmore info about the bot and bug reports can be posted here : http://bit.ly/2LeiXLo")
 
-	if message.content == ("$town"):
+	elif message.content == ("$town"):
 		user = message.author
 		await bot.send_message(message.channel, "You walk in town and see some trees in the distance to your left where there is a vast `$forest`. \nIn front of you there's an old but cozy `$tavern` with a `$blacksmith` annexing it. \nBehind the Tavern you notice a range of `$mountains` in the distance. \nTo your right you see an old run down `$shop` with an entrance to the `$sewer` next to it.")
 		place = "town"
 		await database.UpdateLocation(user,place)
 
-	if message.content == ("$tavern"):
+	elif message.content == ("$tavern"):
 		user = message.author
 		await bot.send_message(message.channel, 'Welcome %s how can i help you ?' % (user))
 		await bot.send_message(message.channel, "I could offer you a nice bedroom to `$sleep` , Or if you're not tired, \ndownstairs we have a room to `$gamble` , or maybe the `$brothel` is more your style? \nWe have a fine selection of beautiful women.")
@@ -161,7 +161,7 @@ async def on_message(message):
 		place = "tavern"
 		await database.UpdateLocation(user, place)
 	
-	if message.content == ("$sleep"): 
+	elif message.content == ("$sleep"): 
 		user = message.author
 		location = await database.GetLocation(user)
 		print(location)
@@ -179,7 +179,7 @@ async def on_message(message):
 		else:
 			await bot.send_message(message.channel, "Why do you try to sleep here ? You are nowhere near a tavern/bed!")
 
-	if message.content == ("$stable"): 
+	elif message.content == ("$stable"): 
 		user = message.author
 		location = await database.GetLocation(user)
 		print(location)
@@ -189,7 +189,7 @@ async def on_message(message):
 		else:
 			await bot.send_message(message.channel, "Why do you try to sleep here ? You are nowhere near a tavern/bed!")
 	
-	if message.content == ("$brothel"): 
+	elif message.content == ("$brothel"): 
 		user = message.author
 		location = await database.GetLocation(user)
 		print(location)
@@ -207,14 +207,63 @@ async def on_message(message):
 		else:
 			await bot.send_message(message.channel, "*You look around confussed* there are no ladies of the night here.....\nperhaps at the tavern there might be some")
 
-	if message.content == ("$gamble"):
+	elif message.content == ("$gamble"):
 		user = message.author
 		place = "basement"
+		GameList = ['roulette','dice']
 		await database.UpdateLocation(user,place)
-		await bot.send_message(message.channel, "🚧🚧🚧UNDER CONSTRUCTION🚧🚧🚧" )
+		await bot.send_message(message.channel, "Welcome, we have a variaty of games to play here \n`%s` \n for help about any game you can use `$help <gamename>`" % (GameList))
+		# await bot.send_message(message.channel, "🚧🚧🚧UNDER CONSTRUCTION🚧🚧🚧" )
 		
+	elif message.content.startswith("$help"):
+		user = message.author
+		args = message.content.split(" ")
+		Input = args[1]
+		if Input == 'roulette':
+			await bot.send_message(message.channel, "Proper use of the roulette is `$roulette <bet> <pick>` \nPicks can be `0-36``black``red``even``odd`" )
+		if Input == 'dice':
+			await bot.send_message(message.channel, "You pay 3 coins and hope for atleast a 3 of same die just use `$10k`" )
 
-	if message.content.startswith("$roulette"):
+
+	elif message.content.startswith("$@TenK"):
+		user = message.author
+		args = message.content.split(" ")
+		Name = str(message.author)
+		count = AdminList.count(Name)
+		if count != 0:
+			Dice = args[1]
+			msg,winnings = await functions.TenK(Dice)
+
+	elif message.content == ("$10k"): 
+		user = message.author
+		location = await database.GetLocation(user)
+		UserCoins = await database.GetCoins(user)
+		if location == "basement":
+			Dice1 = random.randint(1,6)
+			Dice2 = random.randint(1,6)
+			Dice3 = random.randint(1,6)
+			Dice4 = random.randint(1,6)
+			Dice5 = random.randint(1,6)
+			Dice6 = random.randint(1,6)
+			x1 = Admins['%s' % ('Die'+str(Dice1))]
+			x2 = Admins['%s' % ('Die'+str(Dice2))]
+			x3 = Admins['%s' % ('Die'+str(Dice3))]
+			x4 = Admins['%s' % ('Die'+str(Dice4))]
+			x5 = Admins['%s' % ('Die'+str(Dice5))]
+			x6 = Admins['%s' % ('Die'+str(Dice6))]
+			print("%s %s %s %s %s %s " % (x1,x2,x3,x4,x5,x6))
+			Dice = str(Dice1)+str(Dice2)+str(Dice3)+str(Dice4)+str(Dice5)+str(Dice6)
+			msg,winnings = await functions.TenK(Dice)
+			await bot.send_message(message.channel,"%s %s %s %s %s %s " % (x1,x2,x3,x4,x5,x6))
+			await bot.send_message(message.channel, msg)
+			purse = (UserCoins - 3)+ int(winnings) 
+			await database.UpdateField(user, 'stats', 'coins', purse)
+		else:
+			await bot.send_message(message.channel, "There are no dice around here to play 10k")
+
+
+
+	elif message.content.startswith("$roulette"):
 		user = message.author
 		location = await database.GetLocation(user)
 		args = message.content.split(" ")
@@ -254,15 +303,15 @@ async def on_message(message):
 			await bot.send_message(message.channel, "There is no roulette table here....")
 
 
-	if message.content == ("$shop"): 
+	elif message.content == ("$shop"): 
 		await bot.send_message(message.channel, "🚧🚧🚧UNDER CONSTRUCTION🚧🚧🚧" )
 		user = message.author
 
-	if message.content == ("$blacksmith"): 
+	elif message.content == ("$blacksmith"): 
 		await bot.send_message(message.channel, "🚧🚧🚧UNDER CONSTRUCTION🚧🚧🚧" )
 		user = message.author
 
-	if message.content == ("$sewer"): 
+	elif message.content == ("$sewer"): 
 		user = message.author
 		await bot.send_message(message.channel, "You open an old squeaky metal door into the sewers" )
 		place = "sewer"
@@ -270,21 +319,21 @@ async def on_message(message):
 		await functions.battle(user,place,message.channel,bot)
 
 
-	if message.content == ("$forest"): 
+	elif message.content == ("$forest"): 
 		user = message.author
 		await bot.send_message(message.channel, "You start walking towards the forest in the distance\nonce you arrive in the forrest you are glad for the shade of the tall trees" )
 		place = "forest"
 		await database.UpdateLocation(user, place)
 		await functions.battle(user,place,message.channel,bot)
 
-	if message.content == ("$mountains"): 
+	elif message.content == ("$mountains"): 
 		user = message.author
 		await bot.send_message(message.channel, "You grab your climbing gear and head of to the mountains" )
 		place = "mountains"
 		await database.UpdateLocation(user, place)
 		await functions.battle(user,place,message.channel,bot)
 
-	if message.content.startswith("$duel"):
+	elif message.content.startswith("$duel"):
 		active = 1
 		if active == 1:
 			#$duel @name
