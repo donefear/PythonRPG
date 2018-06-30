@@ -128,7 +128,10 @@ async def duel(message, challenger, target, channelid, bot):
 			DefenderData = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
 			AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
 			await asyncio.sleep(2)
-			coinwinner = random.randint(0,1)
+			if (AIntel+random.randint(1,6)) > (DIntel+random.randint(1,6)):
+				coinwinner = 0 
+			else:
+				coinwinner = 1
 			if coinwinner == 0:
 				await bot.send_message(channelid, "Winner of the CoinFlip is %s they get the first strike" % (AName))
 			else:
@@ -144,8 +147,8 @@ async def duel(message, challenger, target, channelid, bot):
 					AHp = combat(DefenderData , AttackerData)
 					coinwinner = 0
 					AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)				
-				await asyncio.sleep(1)
 				await bot.edit_message(msg,new_content="%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName,AHp , DName, DHp))
+				await asyncio.sleep(1.5)
 			if AHp <=0 :
 				winner = DName
 				loser = AName
@@ -168,10 +171,16 @@ def combat(AInfo, DInfo):
 	DDex = DInfo[8]
 	DHp = DInfo[3]
 	DName = DInfo[0]
+	critchance = random.randint(0,100)
+	if (Aintel + random.randint(1,6)) <= critchance :
+		crit = Astr*0.25
+	else:
+		crit = 0
 	Dice = random.randint(1, 12)
-	DMG = (AStr + Dice) - DDex
+	DMG = (AStr + Dice + crit) - DDex
 	if DMG <=0:
 		DMG = 0
+	print('crit : %s' % crit)
 	print("%s did %s dmg" % (AName,DMG))
 	DHp -= DMG
 	print("%s HP = %s" % (DName,DHp))
@@ -366,16 +375,22 @@ async def Roulette(Playername,Value,Bet):
 		if colour1 == Pick:
 			Winnings = Bet*2
 			msg = "The wheel slows down and the ball lands on `%s` and double your winnings" % (output)
+		else:
+			msg = "The wheel slows down and the ball lands on `%s` YOU LOSE" % (output)
+			Winnings -= Bet
 	elif Value == 39 or Value == 40:
-		if Value == 38:
+		if Value == 39:
 			Pick = 'even'
 			print(Pick)
 		else:
 			Pick = 'odd'
 			print(Pick)
-		if num == Value:
+		if num == Pick:
 			Winnings = Bet*2
 			msg = "The wheel slows down and the ball lands on `%s` and double your winnings" % (output) 
+		else:
+			msg = "The wheel slows down and the ball lands on `%s` YOU LOSE" % (output)
+			Winnings -= Bet		
 	elif Value == roll == 0:
 		print(Value)
 		Winnings = Bet*6

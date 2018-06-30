@@ -113,6 +113,9 @@ async def chat(message,channelid,bot):
 			msg2 = await bot.send_message(message.channel, ":x: :x: :x: ACCESS DENIED :x: :x: :x: ")
 			await clear(msg2)
 
+	
+
+
 	if message.content == "$ping":
 		Name = message.author
 		await bot.start_private_message(Name)

