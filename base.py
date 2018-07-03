@@ -127,7 +127,7 @@ async def on_message(message):
 				await clear(msg2)
 
 
-	elif message.content == "$info":
+	elif message.content == "$info" or message.content == "$stats":
 		name = str(message.author)		
 		Data = await database.DownloadFullRecord(name, "stats")	
 		count = len(Data)
@@ -149,7 +149,7 @@ async def on_message(message):
 				Location = row[10]
 				Coins = row[11]
 				# Now print fetched result'💪','❤','🤓','🖐'
-				await bot.send_message(message.channel, "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Attack: %s \n🍀Luck: %s | 🖐Defence: %s\n🗺Location: %s  | 💰Coins: %s" % (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex, Location , Coins))	
+				await bot.send_message(message.channel, "Name = `%s` \nLevel: `%s` Exp: `%s` \nHp: `%s`      | MaxHp: `%s` \n❤Const: `%s` | 💪Attack: `%s` \n🍀Luck: `%s` | 🖐Defence: `%s`\n🗺Location: `%s`  | 💰Coins: `%s`" % (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex, Location , Coins))	
 
 	elif message.content == ("$exp"):
 		await debug.expdebug(bot, message.channel, message.author)
@@ -324,6 +324,7 @@ async def on_message(message):
 					print("debug::poop3")
 					await bot.send_message(message.channel, "*You step up to the table placing tokens worth %s on %s* \nThe Croupier calls end of bets and spins the wheel. \nIt feels like an eternity for the ball to settle." % (Bet,Pick))
 					msg,winnings = await functions.Roulette(user,Value,Bet)
+					await asyncio.sleep(2.5)
 					await bot.send_message(message.channel, msg)
 					purse = UserCoins + int(winnings) 
 					print(purse)
@@ -434,4 +435,3 @@ async def on_message(message):
 
 
 bot.run(token)
-cnx.close()

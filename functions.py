@@ -55,15 +55,17 @@ async def battle(Name,location,channelid,bot):
 	while Hp > 1 and MonsterHp > 1 :	
 		print(coinwinner)
 		if coinwinner == 0 :
-			MonsterHp = combat(PlayerData , MonsterData)
+			MonsterHp,crit = combat(PlayerData , MonsterData)
 			coinwinner = 1
 			MonsterData = (MonsterName, 0, 0, MonsterHp, MonsterHp, 0, MonsterAttack, 0, MonsterDefence)
 		else:
-			Hp = combat(MonsterData , PlayerData)
+			Hp,crit = combat(MonsterData , PlayerData)
 			coinwinner = 0
 			PlayerData = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)			
 		await asyncio.sleep(1)
-		await bot.edit_message(msg,new_content="%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (Name, round(Hp+0.5) , MonsterName, round(MonsterHp+0.5)))
+		# newHP = round(int(Hp)+0.5)
+		# newMonsterHp = round(int(MonsterHp)+0.5)
+		await bot.edit_message(msg,new_content="%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (Name, Hp, MonsterName, MonsterHp))
 	if Hp <=0 :
 		#PLAYER DEAD
 		winner = MonsterName
@@ -79,9 +81,6 @@ async def battle(Name,location,channelid,bot):
 		await database.UpdateField(Name, 'stats', 'Hp', round(Hp+0.5))
 		winnings = coins + MonsterCoins
 		await database.UpdateField(Name, 'stats', 'coins', winnings)
-
-
-	
 
 
 async def duel(message, challenger, target, channelid, bot):
@@ -140,14 +139,17 @@ async def duel(message, challenger, target, channelid, bot):
 			print("AHP : %s  DHP : %s" % (AHp, DHp))
 			while AHp > 0 and DHp > 0 :	
 				if coinwinner == 0 :
-					DHp = combat(AttackerData , DefenderData)
+					DHp,crit = combat(AttackerData , DefenderData)
 					coinwinner = 1
 					DefenderData = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
 				else:
-					AHp = combat(DefenderData , AttackerData)
+					AHp,crit = combat(DefenderData , AttackerData)
 					coinwinner = 0
-					AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)				
-				await bot.edit_message(msg,new_content="%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName,AHp , DName, DHp))
+					AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)	
+				if crit == 0:
+					await bot.edit_message(msg,new_content="%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s " % (AName,AHp , DName, DHp))
+				else:
+					await bot.edit_message(msg,new_content="%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s \n Critted for %s" % (AName,AHp , DName, DHp, crit))
 				await asyncio.sleep(1.5)
 			if AHp <=0 :
 				winner = DName
@@ -166,14 +168,19 @@ async def duel(message, challenger, target, channelid, bot):
 def combat(AInfo, DInfo):
 	#DInfo = DefenderData = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
 	#AInfo = AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
+	print(DInfo)
 	AName = AInfo[0]
 	AStr = AInfo[6]
 	DDex = DInfo[8]
-	DHp = DInfo[3]
+	DHp = int(DInfo[3])
 	DName = DInfo[0]
+	AIntel = AInfo[7]
 	critchance = random.randint(0,100)
-	if (Aintel + random.randint(1,6)) <= critchance :
-		crit = Astr*0.25
+	luck = AIntel + random.randint(1,6)
+	print("critchance:%s\nluck:%s"%(critchance,luck))
+	r=range(0,luck)
+	if critchance in r:
+		crit = int(AStr*0.25)
 	else:
 		crit = 0
 	Dice = random.randint(1, 12)
@@ -182,9 +189,9 @@ def combat(AInfo, DInfo):
 		DMG = 0
 	print('crit : %s' % crit)
 	print("%s did %s dmg" % (AName,DMG))
-	DHp -= DMG
+	DHp -= int(DMG)
 	print("%s HP = %s" % (DName,DHp))
-	return DHp
+	return DHp,crit
 
 async def exp(PlayerName, ExpAmount, PlayerExp, bot, channelid):
 	#Generalized the exp giving code

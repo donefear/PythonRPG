@@ -3,14 +3,16 @@ import configparser
 import random
 
 config = configparser.ConfigParser()
-config.read(['config.ini', 'persontoken.ini', 'monsters.ini'])
-Statsinfo = config['player']
+config.read(['./config.ini', './persontoken.ini', './monsters.ini','./prices.ini'])
+
 DBToken = config['MySQL']
 token_user = DBToken['user']
 token_password = DBToken['password']
 token_database = DBToken['database']
 token_host = DBToken['host']
+Statsinfo = config['player']
 Maxstats = float(Statsinfo['MaxStats'])
+# Maxstats=20
 
 
 async def GenerateStats(Name):
