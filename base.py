@@ -11,6 +11,7 @@ import debug
 import configparser
 import database
 import rndchatcommands
+import AdminCommands
 ############LOADING CONFIG FILES ##################
 config = configparser.ConfigParser()
 config.read(['config.ini', 'persontoken.ini', 'prices.ini'])
@@ -31,7 +32,8 @@ user = discord.User()
 ScriptName = "Text-Based RPG game for Discord"
 Website = "https://discord.gg/rm5Mbyu"
 Description = "......"
-Creator = "@DoneFear & @BoySanic"
+Creator = "@DoneFear"
+creator = 4329536788405725515
 Version = "2.0.0.4"
 
 
@@ -57,19 +59,22 @@ async def on_message(message):
 		print("%s|%s  :  %s" % (message.channel,message.author,message.content))		
 		await bot.send_message(spychannel,"%s|%s|%s  :  %s" % (message.server,message.channel,message.author,message.content))
 
-
 	if message.content.startswith("$@"):
 		author = message.author
 		Name = str(message.author)
 		#await bot.send_message(message.channel,"DEBUG:author :  %s " %  (author))
 		count = AdminList.count(Name)
-		if count != 0 or str(author) == 'DoneFear#0897' or str(author) == 'DoneFear#0897':	
-			if message.content.startswith("$@game"):		
-				game = message.content[len('$@game'):].strip()
-				await bot.change_presence(game=discord.Game(name=game,url='https://discord.gg/rm5Mby',type=1), status=discord.Status("online"))
-			elif message.content.startswith("$@debugID"):
-				debugchannelid = bot.get_channel(message.channel)
-				await bot.send_message(message.channel, "this channel's id  = %s" % debugchannelid)
+		if count != 0 or str(author) == 'DoneFear#0897':
+			command  = message.content[len('$@'):].strip()
+			args = message.content.split(" ")
+			target = args[1]
+			value = args[2]
+			print("args: %s"% args)
+			await AdminCommands.Commands(command,target,value,message.channel,bot)
+			
+			# elif message.content.startswith("$@debugID"):
+			# 	debugchannelid = bot.get_channel(message.channel)
+			# 	await bot.send_message(message.channel, "this channel's id  = %s" % debugchannelid)
 		else:
 			async def clear(msg2):
 				print("waiting 10 sec")
@@ -154,22 +159,7 @@ async def on_message(message):
 	elif message.content == ("$exp"):
 		await debug.expdebug(bot, message.channel, message.author)
 
-	elif message.content == ("$@reroll"):
-		user = message.author
-		Name = str(message.author)
-		count = AdminList.count(Name)
-		if count != 0 or str(author) == 'DoneFear#0897':
-			stats,Const,Dex,Intel,Str,Level,Exp,MaxHp,Hp = await database.GenerateStats(user)
-			await bot.send_message(message.channel, stats)
-			await database.UpdateField(Name, 'stats','Const', Const)
-			await database.UpdateField(Name, 'stats','Dex', Dex)
-			await database.UpdateField(Name, 'stats','Intel', Intel)
-			await database.UpdateField(Name, 'stats','Level', Level)
-			await database.UpdateField(Name, 'stats','MaxHp', MaxHp)
-			await database.UpdateField(Name, 'stats','Hp', Hp)
-			await database.UpdateField(Name, 'stats','Exp', Exp)
-			await database.UpdateField(Name, 'stats','Str', Str)
-
+	
 	elif message.content == ('$admins'):
 		await bot.send_message(message.channel, "The admins for the bot are : %s" % (AdminList))
 
@@ -351,7 +341,6 @@ async def on_message(message):
 		place = "sewer"
 		await database.UpdateLocation(user, place)
 		await functions.battle(user,place,message.channel,bot)
-
 
 	elif message.content == ("$forest"): 
 		user = message.author

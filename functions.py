@@ -26,15 +26,9 @@ async def battle(Name,location,channelid,bot):
 			Intel = row[8]
 			Dex = row[9]
 			coins = row[11]
+	
 	#get info of the monster
-	print('location = %s' % (location))
-	area = config['%s' % (location)]
-	moblist = area['monster']
-	print(moblist)
-	roll = (random.randint(0,(len(moblist)-1)))
-	print(roll)
-	mob = config['%s%s' % (location , roll)]
-	print(mob)
+	mob = await WeightedDice(location)
 	MonsterName = mob['Name']
 	MonsterHp = int(mob['Hp'])
 	MonsterAttack = int(mob['Attack'])
@@ -207,6 +201,37 @@ async def exp(PlayerName, ExpAmount, PlayerExp, bot, channelid):
 		#async def UpdateField(Name, Table, Field, Value):
 		await database.IncrementFieldByValue(PlayerName, "stats", "Level", LevelsToGive)
 		await levelup(PlayerName, bot, channelid)
+	if(PlayerExp < 0) and (PlayerExp != 0):
+		while(PlayerExp < 0):
+			PlayerExp += 100
+		Data = await database.DownloadFullRecord(PlayerName,"stats")
+		print(Data)
+		for row in Data:
+			ID = row[0]
+			Name = row[1]
+			Level = row[2]
+			Exp = row[3]
+			Hp = row[4]
+			MaxHp = row[5]
+			Const = row[6]
+			Str = row[7]
+			Intel = row[8]
+			Dex = row[9]
+			Location = row[10]
+			Coins = row[11]
+		if Level !=1:
+			LevelsToGive -=1
+			dice = random.randint(1,4)
+			if dice == 1:
+				await database.IncrementFieldByValue(PlayerName, "stats", "Str", -1)		
+			elif dice == 2:
+				await database.IncrementFieldByValue(PlayerName, "stats", "Const", -1)	
+			elif dice == 3:
+				await database.IncrementFieldByValue(PlayerName, "stats", "Intel", -1)	
+			elif dice == 4:
+				await database.IncrementFieldByValue(PlayerName, "stats", "Dex", -1)
+				
+		await database.IncrementFieldByValue(PlayerName, "stats", "Level", LevelsToGive)
 	await database.UpdateField(PlayerName, "stats", "Exp", PlayerExp)
 
 async def levelup(Playername,bot, channelid):
@@ -436,3 +461,24 @@ async def TenK(Dice):
 			msg = "You lost !"
 		print('%sx%s' % (Dice.count(x),x))
 	return msg,Winnings
+
+async def WeightedDice(location):
+	area = config['%s' % (location)]
+	moblist = area['monster']
+	WDice = []
+	
+	moblistx = len(moblist)
+	for mobs in moblist:
+		weight = 0
+		mob = config['%s%s' % (location , mobs)]	
+		weight = int(mob['SpawnChance'])
+		x=0
+		while x != weight :
+			WDice.append(mob)
+			x += 1
+			print("mob:%s | x : %s \nWDice:%s "% (mob,x,WDice))
+	print(len(WDice))
+	roll = random.randint(0,(len(WDice)-1))
+	print("WeightedDice roll : %s" % roll)
+	monster = WDice[roll]
+	return monster
