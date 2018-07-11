@@ -34,7 +34,7 @@ Website = "https://discord.gg/rm5Mbyu"
 Description = "......"
 Creator = "@DoneFear"
 creator = 4329536788405725515
-Version = "2.0.0.4"
+Version = "0.3.0.4"
 
 
 #on startup of bot in console
@@ -56,8 +56,13 @@ async def on_message(message):
 	
 	spychannel = bot.get_channel('462632510925570049')
 	if message.channel != spychannel :
-		print("%s|%s  :  %s" % (message.channel,message.author,message.content))		
-		await bot.send_message(spychannel,"%s|%s|%s  :  %s" % (message.server,message.channel,message.author,message.content))
+		# print("%s|%s  :  %s" % (message.channel,message.author,message.content))
+		if ('@here' not in message.content ) and ('@everyone' not in message.content):	
+			await bot.send_message(spychannel,"%s|%s|%s  :  %s" % (message.server,message.channel,message.author,message.content))
+		else:
+			Message = message.content.replace("@everyone","#@#")
+			msg = Message.replace("@here","#@#")
+			await bot.send_message(spychannel,"%s|%s|%s  :  %s" % (message.server,message.channel,message.author,msg))
 
 	if message.content.startswith("$@"):
 		author = message.author
@@ -71,10 +76,6 @@ async def on_message(message):
 			value = args[2]
 			print("args: %s"% args)
 			await AdminCommands.Commands(command,target,value,message.channel,bot)
-			
-			# elif message.content.startswith("$@debugID"):
-			# 	debugchannelid = bot.get_channel(message.channel)
-			# 	await bot.send_message(message.channel, "this channel's id  = %s" % debugchannelid)
 		else:
 			async def clear(msg2):
 				print("waiting 10 sec")
@@ -131,7 +132,6 @@ async def on_message(message):
 				await bot.clear_reactions(message=msg)
 				await clear(msg2)
 
-
 	elif message.content == "$info" or message.content == "$stats":
 		name = str(message.author)		
 		Data = await database.DownloadFullRecord(name, "stats")	
@@ -158,23 +158,25 @@ async def on_message(message):
 
 	elif message.content == ("$exp"):
 		await debug.expdebug(bot, message.channel, message.author)
-
 	
 	elif message.content == ('$admins'):
 		await bot.send_message(message.channel, "The admins for the bot are : %s" % (AdminList))
 
 
-	elif message.content == ("$help"):
-		await bot.send_message(message.channel, "Welcome to the RPG game by `DoneFear#0897` to get started use `$create` and `$town` to go to town \nYou can find your stats and info about your character with $info\nmore info about the bot and bug reports can be posted here : http://bit.ly/2LeiXLo")
+	elif (message.content == ("$help")) or (message.content == ("$rpg")):
+		await bot.send_message(message.channel, "Welcome to the RPG game by `DoneFear#0897` to get started use `$create` and `$town` to go to town or `$guide` for more info\nYou can find your stats and info about your character with $info\nmore info about the bot and bug reports can be posted here : http://bit.ly/2LeiXLo")
 
-	elif message.content == ("$rpg"):
-		await bot.send_message(message.channel, "Welcome to the RPG game by `DoneFear#0897` to get started use `$create` and `$town` to go to town \nYou can find your stats and info about your character with $info\nmore info about the bot and bug reports can be posted here : http://bit.ly/2LeiXLo")
+	# elif message.content == ("$rpg"):
+	# 	await bot.send_message(message.channel, "Welcome to the RPG game by `DoneFear#0897` to get started use `$create` and `$town` to go to town \nYou can find your stats and info about your character with $info\nmore info about the bot and bug reports can be posted here : http://bit.ly/2LeiXLo")
 
 	elif message.content == ("$town"):
 		user = message.author
-		await bot.send_message(message.channel, "You walk in town and see some trees in the distance to your left where there is a vast `$forest`. \nIn front of you there's an old but cozy `$tavern` with a `$blacksmith` next to it. \nBehind the Tavern you notice a range of `$mountains` in the distance. \nTo your right you see an old run down `$shop` with an entrance to the `$sewer` next to it.")
+		await bot.send_message(message.channel, "You walk in town and see some trees in the distance to your left where there is a vast `$forest`.The is a `$guide` sitting on a bench \nIn front of you there's an old but cozy `$tavern` with a `$blacksmith` next to it. \nBehind the Tavern you notice a range of `$mountains` in the distance. \nTo your right you see an old run down `$shop` with an entrance to the `$sewer` next to it.")
 		place = "town"
 		await database.UpdateLocation(user,place)
+
+	elif message.content == ("$guide"):
+		await bot.send_message(message.channel, "You walk up to a old but wise looking man \nHe greetz you and welcomes you to this small town \n *Welcom traveler and thank you for coming to help us with the monsters* \n *Be warned the forest is recomended lvl 6-10 and the mountains 10-16* ")
 
 	elif message.content == ("$tavern"):
 		user = message.author
@@ -247,7 +249,6 @@ async def on_message(message):
 		if Input == '10k':
 			await bot.send_message(message.channel, "You pay 3 coins and hope for atleast a 3 of same die just use `$10k`" )
 
-
 	elif message.content.startswith("$@TenK"):
 		user = message.author
 		args = message.content.split(" ")
@@ -283,8 +284,6 @@ async def on_message(message):
 			await database.UpdateField(user, 'stats', 'coins', purse)
 		else:
 			await bot.send_message(message.channel, "There are no dice around here to play 10k")
-
-
 
 	elif message.content.startswith("$roulette"):
 		user = message.author
@@ -325,7 +324,6 @@ async def on_message(message):
 		else:
 			print("debug::poop5")
 			await bot.send_message(message.channel, "There is no roulette table here....")
-
 
 	elif message.content == ("$shop"): 
 		await bot.send_message(message.channel, "🚧🚧🚧UNDER CONSTRUCTION🚧🚧🚧" )

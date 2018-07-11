@@ -27,6 +27,25 @@ async def Commands(command,target,value,channelid,bot):
 		await database.UpdateField(target, 'stats', 'coins', purse)
 
 	if command.startswith("info"):
+		Data = await GetData(target)
+		print(Data)
+		count = len(Data)
+		if count == 0:
+			await bot.send_message(channelid,"error no player found")	
+		else:
+			for row in Data:
+				ID = row[0]
+				Name = row[1]
+				Level = row[2]
+				PlayerExp = row[3]
+				Hp = row[4]
+				MaxHp = row[5]
+				Const = row[6]
+				Str = row[7]
+				Intel = row[8]
+				Dex = row[9]
+				Location = row[10]
+				Coins = row[11]
 		await bot.send_message(channelid, "Name = `%s` \nLevel: `%s` Exp: `%s` \nHp: `%s`      | MaxHp: `%s` \n❤Const: `%s` | 💪Attack: `%s` \n🍀Luck: `%s` | 🖐Defence: `%s`\n🗺Location: `%s`  | 💰Coins: `%s`" % (target, Level, PlayerExp, Hp, MaxHp, Const, Str, Intel, Dex, Location , Coins))	
 	
 	if command.startswith("test"):
@@ -44,32 +63,32 @@ async def Commands(command,target,value,channelid,bot):
 		await database.UpdateField(target, 'stats','Exp', Exp)
 		await database.UpdateField(target, 'stats','Str', Str)
 
-	async def GetData(target):
-		Data = await database.DownloadFullRecord(target,"stats")
-		print("%s : %s" % (target,value))
-		count = len(Data)
-		return Data
+async def GetData(target):
+	Data = await database.DownloadFullRecord(target,"stats")
+	count = len(Data)
+	return Data
 
-	async def GetExp(target):
-		Data = GetData(target)
-		print(Data)
-		if count == 0:
-			await bot.send_message(channelid,"error no player found")	
-		else:
-			for row in Data:
-				ID = row[0]
-				Name = row[1]
-				Level = row[2]
-				PlayerExp = row[3]
-				Hp = row[4]
-				MaxHp = row[5]
-				Const = row[6]
-				Str = row[7]
-				Intel = row[8]
-				Dex = row[9]
-				Location = row[10]
-				Coins = row[11]
-		return PlayerExp
+async def GetExp(target):
+	Data = GetData(target)
+	print(Data)
+	count = len(Data)
+	if count == 0:
+		await bot.send_message(channelid,"error no player found")	
+	else:
+		for row in Data:
+			ID = row[0]
+			Name = row[1]
+			Level = row[2]
+			PlayerExp = row[3]
+			Hp = row[4]
+			MaxHp = row[5]
+			Const = row[6]
+			Str = row[7]
+			Intel = row[8]
+			Dex = row[9]
+			Location = row[10]
+			Coins = row[11]
+	return PlayerExp
 		
 
 # # name = message.content[len('$name'):].strip()

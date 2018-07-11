@@ -46,6 +46,7 @@ async def battle(Name,location,channelid,bot):
 	coinwinner = 0
 	msg  = await bot.send_message(channelid, "%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (Name, Hp , MonsterName, MonsterHp))
 	print("HP : %s  HP : %s" % (Hp, MonsterHp))
+	Console(bot,("HP : %s  HP : %s" % (Hp, MonsterHp)))
 	while Hp > 1 and MonsterHp > 1 :	
 		print(coinwinner)
 		if coinwinner == 0 :
@@ -131,6 +132,7 @@ async def duel(message, challenger, target, channelid, bot):
 				await bot.send_message(channelid, "Winner of the CoinFlip is %s they get the first strike" % (DName))
 			msg  = await bot.send_message(channelid, "%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName, AHp , DName, DHp))
 			print("AHP : %s  DHP : %s" % (AHp, DHp))
+			Console(bot,("AHP : %s  DHP : %s" % (AHp, DHp)))
 			while AHp > 0 and DHp > 0 :	
 				if coinwinner == 0 :
 					DHp,crit = combat(AttackerData , DefenderData)
@@ -201,7 +203,9 @@ async def exp(PlayerName, ExpAmount, PlayerExp, bot, channelid):
 		#async def UpdateField(Name, Table, Field, Value):
 		await database.IncrementFieldByValue(PlayerName, "stats", "Level", LevelsToGive)
 		await levelup(PlayerName, bot, channelid)
+	#deleveling 
 	if(PlayerExp < 0) and (PlayerExp != 0):
+		#
 		while(PlayerExp < 0):
 			PlayerExp += 100
 		Data = await database.DownloadFullRecord(PlayerName,"stats")
@@ -229,9 +233,9 @@ async def exp(PlayerName, ExpAmount, PlayerExp, bot, channelid):
 			elif dice == 3:
 				await database.IncrementFieldByValue(PlayerName, "stats", "Intel", -1)	
 			elif dice == 4:
-				await database.IncrementFieldByValue(PlayerName, "stats", "Dex", -1)
-				
+				await database.IncrementFieldByValue(PlayerName, "stats", "Dex", -1)				
 		await database.IncrementFieldByValue(PlayerName, "stats", "Level", LevelsToGive)
+
 	await database.UpdateField(PlayerName, "stats", "Exp", PlayerExp)
 
 async def levelup(Playername,bot, channelid):
@@ -476,9 +480,13 @@ async def WeightedDice(location):
 		while x != weight :
 			WDice.append(mob)
 			x += 1
-			print("mob:%s | x : %s \nWDice:%s "% (mob,x,WDice))
+	print("mob:%s | x : %s \nWDice:%s "% (mob,x,WDice))
 	print(len(WDice))
 	roll = random.randint(0,(len(WDice)-1))
 	print("WeightedDice roll : %s" % roll)
 	monster = WDice[roll]
 	return monster
+
+async def Console(bot,msg):
+	console = bot.get_channel('465523529337536522')
+	await bot.send_message(console,msg)
