@@ -12,6 +12,7 @@ import configparser
 import database
 import rndchatcommands
 import AdminCommands
+import shop
 ############LOADING CONFIG FILES ##################
 config = configparser.ConfigParser()
 config.read(['config.ini', 'persontoken.ini', 'prices.ini'])
@@ -91,6 +92,8 @@ async def on_message(message):
 		await bot.send_message(message.channel, stats)
 		text = ("Are you happy with these stats? React with 👍or👎.")
 		msg = await bot.send_message(message.channel, text)
+		await bot.add_reaction(message=msg, emoji='👍')
+		await bot.add_reaction(message=msg, emoji='👎')
 		for n in range(100):
 			def check(reaction, user):
 				e = str(reaction.emoji)
@@ -99,38 +102,39 @@ async def on_message(message):
 			res = await bot.wait_for_reaction(message=msg, check=check)
 			emoji = "{0.reaction.emoji}".format(res)
 			emojiuser = "{0.user}".format(res)
+			if str(emojiuser) != "PandaRPG#9636":
+				if str(emojiuser) == str(Name):
+					if emoji == "👍":
+						newmsg = "Welcome to world use `$town` to continue"
+						# await bot.send_message(message.channel,":+1: Accepted")
+						await bot.edit_message(msg,new_content=newmsg)
+								
+					elif emoji == "👎":
+						newmsg = "Rerolling  Stats..."
+						# await bot.send_message(message.channel,":-1: DENIED")
+						await bot.edit_message(msg,new_content=newmsg)					
+						stats,Const,Dex,Intel,Str,Level,Exp,MaxHp,Hp = await database.GenerateStats(Name)
+						await bot.send_message(message.channel, stats)
+						await database.UpdateField(Name, 'stats','Const', Const)
+						await database.UpdateField(Name, 'stats','Dex', Dex)
+						await database.UpdateField(Name, 'stats','Intel', Intel)
+						await database.UpdateField(Name, 'stats','Level', Level)
+						await database.UpdateField(Name, 'stats','MaxHp', MaxHp)
+						await database.UpdateField(Name, 'stats','Hp', Hp)
+						await database.UpdateField(Name, 'stats','Exp', Exp)
+						await database.UpdateField(Name, 'stats','Str', Str)
 
-			if str(emojiuser) == str(Name):
-				if emoji == "👍":
-					newmsg = "Welcome to world use `$town` to continue"
-					# await bot.send_message(message.channel,":+1: Accepted")
-					await bot.edit_message(msg,new_content=newmsg)
-							
-				elif emoji == "👎":
-					newmsg = "Rerolling  Stats..."
-					# await bot.send_message(message.channel,":-1: DENIED")
-					await bot.edit_message(msg,new_content=newmsg)					
-					stats,Const,Dex,Intel,Str,Level,Exp,MaxHp,Hp = await database.GenerateStats(Name)
-					await bot.send_message(message.channel, stats)
-					await database.UpdateField(Name, 'stats','Const', Const)
-					await database.UpdateField(Name, 'stats','Dex', Dex)
-					await database.UpdateField(Name, 'stats','Intel', Intel)
-					await database.UpdateField(Name, 'stats','Level', Level)
-					await database.UpdateField(Name, 'stats','MaxHp', MaxHp)
-					await database.UpdateField(Name, 'stats','Hp', Hp)
-					await database.UpdateField(Name, 'stats','Exp', Exp)
-					await database.UpdateField(Name, 'stats','Str', Str)
-
-				break
-			else:
-				async def clear(msg2):
-					print("waiting 2 sec")
-					await asyncio.sleep(2)
-					print("deleting msg")
-					await bot.delete_message(msg2)
-				msg2 = await bot.send_message(message.channel, "@%s .... why you response to this ......:unamused: " % (emojiuser))
-				await bot.clear_reactions(message=msg)
-				await clear(msg2)
+					break
+				else:
+					async def clear(msg2):
+						print("waiting 2 sec")
+						await asyncio.sleep(2)
+						print("deleting msg")
+						await bot.delete_message(msg2)
+					msg2 = await bot.send_message(message.channel, "@%s .... why you response to this ......:unamused: " % (emojiuser))
+					# await bot.clear_reactions(message=msg)
+					await bot.remove_reaction(message=msg,emoji=emoji,member=emojiuser)
+					await clear(msg2)
 
 	elif message.content == "$info" or message.content == "$stats":
 		name = str(message.author)		
@@ -372,6 +376,8 @@ async def on_message(message):
 			if target != "432953678840725515":
 				text = ("@%s Challenged %s please react to this message with :+1: or :-1: respectively for accepting or denying the duel" % (challenger,args[1]))
 				msg = await bot.send_message(message.channel, text)
+				await bot.add_reaction(message=msg, emoji='👍')
+				await bot.add_reaction(message=msg, emoji='👎')
 
 				for n in range(100):
 					def check(reaction, user):
@@ -379,30 +385,34 @@ async def on_message(message):
 						return e.startswith(('👍', '👎'))
 
 					res = await bot.wait_for_reaction(message=msg, check=check)
+					# res = await bot.on_reaction_add(message=msg, check=check)
 					emoji = "{0.reaction.emoji}".format(res)
 					emojiuser = "{0.user}".format(res)
+					print(emojiuser)
 
-					if str(emojiuser) == str(targetid):
-						if emoji == "👍":
-							newmsg = "challenge accepted"
-							# await bot.send_message(message.channel,":+1: Accepted")
-							await bot.edit_message(msg,new_content=newmsg)
-							await functions.duel(message,challenger,targetid,message.channel,bot)
-							
-						elif emoji == "👎":
-							newmsg = "challenge DENIED"
-							# await bot.send_message(message.channel,":-1: DENIED")
-							await bot.edit_message(msg,new_content=newmsg)
-						break
-					else:
-						async def clear(msg2):
-							print("waiting 2 sec")
-							await asyncio.sleep(2)
-							print("deleting msg")
-							await bot.delete_message(msg2)
-						msg2 = await bot.send_message(message.channel, "@%s you were not challenged why you response to this ......:unamused: " % (emojiuser))
-						await bot.clear_reactions(message=msg)
-						await clear(msg2)
+					if str(emojiuser) != "PandaRPG#9636":
+
+						if str(emojiuser) == str(targetid):
+							if emoji == "👍":
+								newmsg = "challenge accepted"
+								# await bot.send_message(message.channel,":+1: Accepted")
+								await bot.edit_message(msg,new_content=newmsg)
+								await functions.duel(message,challenger,targetid,message.channel,bot)
+								
+							elif emoji == "👎":
+								newmsg = "challenge DENIED"
+								# await bot.send_message(message.channel,":-1: DENIED")
+								await bot.edit_message(msg,new_content=newmsg)
+							break
+						else:
+							async def clear(msg2):
+								print("waiting 2 sec")
+								await asyncio.sleep(2)
+								print("deleting msg")
+								await bot.delete_message(msg2)
+							msg2 = await bot.send_message(message.channel, "@%s you were not challenged why you response to this ......:unamused: " % (emojiuser))
+							await bot.clear_reactions(message=msg)
+							await clear(msg2)
 			else:
 				await bot.send_message(message.channel, "I'm almighty you can't duel me")
 				active = 0

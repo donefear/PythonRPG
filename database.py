@@ -80,48 +80,20 @@ async def GetLocation(Name):
 	print("connecting to database")
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)		
+	sql = "SELECT location FROM stats "" WHERE name = '%s'" % (Name)		
 	cursor.execute(sql)
-	output = cursor.fetchall()	
-	print(output)
-	for row in output:
-		ID = row[0]
-		Name = row[1]
-		Level = row[2]
-		Exp = row[3]
-		Hp = row[4]
-		MaxHp = row[5]
-		Const = row[6]
-		Str = row[7]
-		Intel = row[8]
-		Dex = row[9]
-		location = row[10]
-		coins = row[11]
+	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
-	return location
+	return output
 
 async def GetCoins(Name):
 	print("connecting to database")
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)		
+	sql = "SELECT coins FROM stats "" WHERE name = '%s'" % (Name)		
 	cursor.execute(sql)	
-	output = cursor.fetchall()
-	print(output)
-	for row in output:
-		ID = row[0]
-		Name = row[1]
-		Level = row[2]
-		Exp = row[3]
-		Hp = row[4]
-		MaxHp = row[5]
-		Const = row[6]
-		Str = row[7]
-		Intel = row[8]
-		Dex = row[9]
-		location = row[10]
-		coins = row[11]
+	coins = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
 	return coins
@@ -178,4 +150,81 @@ async def IncrementFieldByValue(Name, Table, Field, Value):
 	cursor.execute(sql)
 	cnx.commit()
 	cnx.close()
+
+async def GetMainHand(Name):
+	print("connecting to database")
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = "SELECT MainHand FROM stats "" WHERE name = '%s'" % (Name)		
+	cursor.execute(sql)	
+	output = cursor.fetchall()
+	cnx.commit()
+	cnx.close()
+	return output
+
+async def GetOffHand(Name):
+	print("connecting to database")
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = "SELECT OffHand FROM stats "" WHERE name = '%s'" % (Name)		
+	cursor.execute(sql)	
+	output = cursor.fetchall()
+	cnx.commit()
+	cnx.close()
+	return output
+
+async def GetOutfit(Name):
+	print("connecting to database")
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = "SELECT Outfit FROM stats "" WHERE name = '%s'" % (Name)		
+	cursor.execute(sql)	
+	output = cursor.fetchall()
+	cnx.commit()
+	cnx.close()
+	return output
+
+async def GetLoot(Name):
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = "SELECT * FROM %s "" WHERE id = '%s'" % ("stats",1)		
+	cursor.execute(sql)
+	output = cursor.fetchall()
+	cnx.commit()
+	cnx.close()
+
+	print(output)
+
+	for row in output:
+		ID = row[0]
+		Name = row[1]
+		Level = row[2]
+		Exp = row[3]
+		Hp = row[4]
+		MaxHp = row[5]
+		Const = row[6]
+		Str = row[7]
+		Intel = row[8]
+		Dex = row[9]
+		coins = row[11]
+		MainHand = row[12]
+		OffHand = row[13]
+		Outfit = row[14]
+		Loot = row[16]
+		usables = row[15]
+
+	blup  = Loot.strip("[]")
+	args = blup.split(",")
+	return args
+
+async def GetUsable(Name):
+	print("connecting to database")
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = "SELECT Usable FROM stats "" WHERE name = '%s'" % (Name)		
+	cursor.execute(sql)	
+	output = cursor.fetchall()
+	cnx.commit()
+	cnx.close()
+	return output
 

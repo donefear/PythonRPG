@@ -8,7 +8,7 @@ import configparser
 from time import gmtime, strftime
 cdate = strftime("GMT %m/%d/%Y", gmtime())
 config = configparser.ConfigParser()
-config.read(['config.ini', 'persontoken.ini', 'monsters.ini','prices.ini'])
+config.read(['config.ini', 'persontoken.ini', 'monsters.ini','prices.ini','items.ini'])
 
 async def battle(Name,location,channelid,bot):
 	#get info of the player
@@ -71,11 +71,12 @@ async def battle(Name,location,channelid,bot):
 		#PLAYER WIN
 		winner = Name
 		loser = MonsterName
-		await bot.send_message(channelid,"The winner was @%s" % winner)
-		await exp(winner, random.randint(9, 11), Exp, bot, channelid)
+		expgain = random.randint(9, 11)
+		await exp(winner, expgain, Exp, bot, channelid)
 		await database.UpdateField(Name, 'stats', 'Hp', round(Hp+0.5))
 		winnings = coins + MonsterCoins
 		await database.UpdateField(Name, 'stats', 'coins', winnings)
+		await bot.send_message(channelid,"The winner was @%s\n Gained %s exp , %s gold and now has %s gold in total " % (winner,expgain,MonsterCoins,winnings))
 
 
 async def duel(message, challenger, target, channelid, bot):
@@ -242,6 +243,10 @@ async def levelup(Playername,bot, channelid):
 	msg = await bot.send_message(channelid, "------------------------------------------- \n Congratulations @%s you leveled up \n Please react with the corresponding emote to this message what you want to level up \n 💪 Attack \n ❤ Constitution \n 🍀 Luck \n 🖐 Defence" % (Playername))
 	# 💪❤🤓🖐
 	Reactioncheck = True
+	await bot.add_reaction(message=msg, emoji='💪')
+	await bot.add_reaction(message=msg, emoji='❤')
+	await bot.add_reaction(message=msg, emoji='🍀')
+	await bot.add_reaction(message=msg, emoji='🖐')
 	while Reactioncheck == True :
 		def check(reaction, user):
 			e = str(reaction.emoji)
@@ -264,27 +269,28 @@ async def levelup(Playername,bot, channelid):
 				Str = rows[7]
 				Intel = rows[8]
 				Dex = rows[9]
-		if str(emojiuser) == str(Playername):
-			if emoji == "💪":
-				# IncrementFieldByValue(Playername, Table, Field, Value):
-				await database.IncrementFieldByValue(Playername, "stats", "Str", 1)
-				await bot.send_message(channelid, "You have chosen to upgrade your Attack.")		
-			elif emoji == "❤":
-				await database.IncrementFieldByValue(Playername, "stats", "Const", 1)
-				await bot.send_message(channelid, "You have chosen to upgrade your constitution.")		
-			elif emoji == "🍀":
-				await database.IncrementFieldByValue(Playername, "stats", "Intel", 1)
-				await bot.send_message(channelid, "You have chosen to upgrade your Luck.")		
-			elif emoji == "🖐":
-				await database.IncrementFieldByValue(Playername, "stats", "Dex", 1)
-				await bot.send_message(channelid, "You have chosen to upgrade your Defence.")		
+		if str(emojiuser) != "PandaRPG#9636":
+			if str(emojiuser) == str(Playername):
+				if emoji == "💪":
+					# IncrementFieldByValue(Playername, Table, Field, Value):
+					await database.IncrementFieldByValue(Playername, "stats", "Str", 1)
+					await bot.send_message(channelid, "You have chosen to upgrade your Attack.")		
+				elif emoji == "❤":
+					await database.IncrementFieldByValue(Playername, "stats", "Const", 1)
+					await bot.send_message(channelid, "You have chosen to upgrade your constitution.")		
+				elif emoji == "🍀":
+					await database.IncrementFieldByValue(Playername, "stats", "Intel", 1)
+					await bot.send_message(channelid, "You have chosen to upgrade your Luck.")		
+				elif emoji == "🖐":
+					await database.IncrementFieldByValue(Playername, "stats", "Dex", 1)
+					await bot.send_message(channelid, "You have chosen to upgrade your Defence.")		
 
-			await database.IncrementFieldByValue(Playername, "stats", "MaxHP", Const)
-			await database.IncrementFieldByValue(Playername, "stats", "HP", Const)
-			Reactioncheck = False 
-		else:
-			await bot.send_message(channelid,"Sorry you didn't level up so you can't choose a stat")
-			await bot.clear_reactions(message=msg)
+				await database.IncrementFieldByValue(Playername, "stats", "MaxHP", Const)
+				await database.IncrementFieldByValue(Playername, "stats", "HP", Const)
+				Reactioncheck = False 
+			else:
+				await bot.send_message(channelid,"Sorry you didn't level up so you can't choose a stat")
+				await bot.clear_reactions(message=msg)
 
 async def Rest(PlayerName):
 	Data = await database.DownloadFullRecord(PlayerName, 'stats')

@@ -1,0 +1,103 @@
+{
+	"Name":"list of items",
+	"1": {
+		"Name":"Potato",
+		"Type":"Weapon",
+		"Description":"just a random potato what do you think you can do with this ?",
+		"Value":5,
+		"EffectStr":1,
+		"EffectDex":0,
+		"EffectHp":0,
+		"EffectInt":0
+	},
+	"2": {
+		"Name":"BrokenSword",
+		"Type":"Weapon",
+		"Description":"An old rusty sword that's broken in half",
+		"Value":10,
+		"EffectStr":2,
+		"EffectDex":0,
+		"EffectHp":0,
+		"EffectInt":0
+	},
+	"3": {
+		"Name":"Barrel_Lid",
+		"Type":"Offhand",
+		"Description":"Some lid you stole from a barrel gues it could function as a shield",
+		"Value":10,
+		"EffectStr":0,
+		"EffectDex":0,
+		"EffectHp":0,
+		"EffectInt":0
+	},
+	"4": {
+		"Name":"Healing_Potion",
+		"Type":"Item",
+		"Description":"A flask containing a liquid that glimmers red when agitated.",
+		"Value":5,
+		"EffectStr":0,
+		"EffectDex":0,
+		"EffectHp":8,
+		"EffectInt":0
+	},
+	"5": {
+		"Name":"",
+		"Type":"Item",
+		"Description":"",
+		"Value":0,
+		"EffectStr":0,
+		"EffectDex":0,
+		"EffectHp":0,
+		"EffectInt":0
+	},
+	"6": {
+		"Name":"",
+		"Type":"Item",
+		"Description":"",
+		"Value":0,
+		"EffectStr":0,
+		"EffectDex":0,
+		"EffectHp":0,
+		"EffectInt":0
+	},
+	"7": {
+		"Name":"",
+		"Type":"Item",
+		"Description":"",
+		"Value":0,
+		"EffectStr":0,
+		"EffectDex":0,
+		"EffectHp":0,
+		"EffectInt":0
+	},
+	"8": {
+		"Name":"",
+		"Type":"Item",
+		"Description":"",
+		"Value":0,
+		"EffectStr":0,
+		"EffectDex":0,
+		"EffectHp":0,
+		"EffectInt":0
+	},
+	"9": {
+		"Name":"",
+		"Type":"Item",
+		"Description":"",
+		"Value":0,
+		"EffectStr":0,
+		"EffectDex":0,
+		"EffectHp":0,
+		"EffectInt":0
+	},
+	"10": {
+		"Name":"",
+		"Type":"Item",
+		"Description":"",
+		"Value":0,
+		"EffectStr":0,
+		"EffectDex":0,
+		"EffectHp":0,
+		"EffectInt":0
+	}
+}

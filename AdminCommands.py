@@ -4,6 +4,7 @@ import random
 import database
 import discord
 import functions
+import shop
 from discord.ext.commands import bot
 from discord.ext import commands
 from time import gmtime, strftime
@@ -20,6 +21,9 @@ async def Commands(command,target,value,channelid,bot):
 		await asyncio.sleep(2)
 		print(PlayerExp)
 		await functions.exp(target, int(value), PlayerExp, bot, channelid)
+
+	if command.startswith("loot"):
+		await shop.InventoryLoot(target, channelid, bot)
 
 	if command.startswith("editcoins"):
 		Coins = await database.GetCoins(target)
