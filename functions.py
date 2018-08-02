@@ -27,7 +27,7 @@ async def BonusStats(Name):
 		#MainHandStr = int(items['MainHand'][str(MainHand)]['EffectStr'][0])
 		#MainHandInt = int(items['MainHand'][str(MainHand)]['Effectint'][0])
 		#MainHandDex = int(items['MainHand'][str(MainHand)]['EffectDex'][0])
-		print(items['MainHand'][str(MainHand)]['EffectHp'])
+		print("Mainhand.json = %s" % (items['MainHand'][MainHand]['EffectHp']))
 	OffHand = await database.GetOffHand(Name)
 	if OffHand == 0:
 		OffHandHp = 0
