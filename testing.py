@@ -17,7 +17,7 @@ with open("items.json", "r") as read_file:
 
 # the result is a Python dictionary:
 # 
-print (data['1']['Name'])
+
 
 cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 cursor = cnx.cursor()
@@ -44,9 +44,14 @@ for row in output:
 	MainHand = row[12]
 	OffHand = row[13]
 	Outfit = row[14]
-	Loot = row[15]
-	usables = row[16]
+	Loot = row[16]
+	usables = row[15]
+Quest = "tail,5"
+
+q = Quest.split(",")
+requiredamount = q[1]
 
 print(Loot)
-print(Loot.count("tail"))
+print(Loot.count(q[0]))
+print("required = %s" % requiredamount)
 

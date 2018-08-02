@@ -1,0 +1,9 @@
+{
+    "type": "sftp",
+    "host": "192.168.0.8",
+    "username": "pi",
+    "password": "potato",
+    "port": 22,
+    "remotePath": "/home/pi/Desktop/RPGBOT",
+    "uploadOnSave": true
+}

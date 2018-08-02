@@ -55,7 +55,6 @@ async def InventoryLoot(PlayerName, channel, bot):
 							react_message = await bot.send_message(channel, embed=embed)
 							for reaction in reactions[:len(y)]:
 								await bot.add_reaction(react_message, reaction)
-							embed.set_footer(text='Poll ID: {}'.format(react_message.id))
 							await bot.edit_message(react_message, embed=embed)
 					else:
 						async def clear(msg2):

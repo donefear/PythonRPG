@@ -19,22 +19,22 @@ async def GenerateStats(Name):
 	Const = random.randint(3, 8)
 	Str = random.randint(3,8)
 	Intel = random.randint(3,8)
-	Dex = random.randint(3,8)	
+	Dex = random.randint(3,8)
 	Count = {'Const':Const, 'Str':Str, 'Intel':Intel, 'Dex':Dex}
 	CurrentStats = Const + Str + Intel + Dex
 	keys = ['Const', 'Str', 'Intel', 'Dex']
 	while CurrentStats < Maxstats:
 		key = keys[(random.randint(0,3))]
-		# for key in keys: 
+		# for key in keys:
 			# If this value is lower than the target, say this is the lowest value
-		if Count[key] < 8:		
+		if Count[key] < 8:
 			Count[key] += 1
 			# Increment your total as well
 			CurrentStats += 1
 	while CurrentStats > Maxstats:
 		key = keys[(random.randint(0,3))]
 		if Count[key] > 3:
-			Count[key] -= 1 
+			Count[key] -= 1
 			CurrentStats -= 1
 	while Const == Str == Dex == Intel == 5:
 		key1 == keys[(random.randint(0,3))]
@@ -48,7 +48,7 @@ async def GenerateStats(Name):
 	Intel = Count['Intel']
 	Str = Count['Str']
 	Level = 1
-	Exp = 0 
+	Exp = 0
 	MaxHp = 10+Const
 	Hp = MaxHp
 	msg =  "Name = %s \nLevel: %s Exp: %s \nHp: %s      | MaxHp: %s \n❤Const: %s | 💪Attack: %s \n🍀Luck: %s | 🖐Defence: %s" % (Name,Level,Exp,Hp,MaxHp,Const,Str,Intel,Dex)
@@ -59,28 +59,28 @@ async def CreateRecord(Name):
 	cursor = cnx.cursor()
 	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
 	cursor.execute(sql)
-	results = cursor.fetchall()	
-	count = cursor.rowcount		
+	results = cursor.fetchall()
+	count = cursor.rowcount
 	if count == 0:
 		msg,Const,Dex,Intel,Str,Level,Exp,MaxHp,Hp = await GenerateStats(Name)
 
 		add_data = ("INSERT INTO stats (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex , coins) ""VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s ,%s)")
 		Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex, 10)
-		
+
 		print(add_data, Data)
 		print(Data)
 		cursor.execute(add_data, Data)
 		cnx.commit()
 	else:
-		msg = "Character already created! use $info"	
-	cnx.close()	
+		msg = "Character already created! use $info"
+	cnx.close()
 	return msg
 
 async def GetLocation(Name):
 	print("connecting to database")
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT location FROM stats "" WHERE name = '%s'" % (Name)		
+	sql = "SELECT location FROM stats "" WHERE name = '%s'" % (Name)
 	cursor.execute(sql)
 	output = cursor.fetchall()
 	cnx.commit()
@@ -91,8 +91,8 @@ async def GetCoins(Name):
 	print("connecting to database")
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT coins FROM stats "" WHERE name = '%s'" % (Name)		
-	cursor.execute(sql)	
+	sql = "SELECT coins FROM stats "" WHERE name = '%s'" % (Name)
+	cursor.execute(sql)
 	coins = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
@@ -113,12 +113,12 @@ async def RerollStats(Name, Data):
 		location = row[10]
 		coins = row[11]
 
-	
+
 
 async def DownloadFullRecord(Name, Table):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT * FROM %s "" WHERE name = '%s'" % (Table, Name)		
+	sql = "SELECT * FROM %s "" WHERE name = '%s'" % (Table, Name)
 	cursor.execute(sql)
 	output = cursor.fetchall()
 	cnx.commit()
@@ -142,7 +142,7 @@ async def UpdateField(Name, Table, Field, Value):
 	cursor.execute(sql)
 	cnx.commit()
 	cnx.close()
-	
+
 async def IncrementFieldByValue(Name, Table, Field, Value):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
@@ -155,19 +155,20 @@ async def GetMainHand(Name):
 	print("connecting to database")
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT MainHand FROM stats "" WHERE name = '%s'" % (Name)		
-	cursor.execute(sql)	
+	sql = "SELECT MainHand FROM stats "" WHERE name = '%s'" % (Name)
+	cursor.execute(sql)
 	output = cursor.fetchall()
+	weapon = output[0]
 	cnx.commit()
 	cnx.close()
-	return output
+	return weapon
 
 async def GetOffHand(Name):
 	print("connecting to database")
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT OffHand FROM stats "" WHERE name = '%s'" % (Name)		
-	cursor.execute(sql)	
+	sql = "SELECT OffHand FROM stats "" WHERE name = '%s'" % (Name)
+	cursor.execute(sql)
 	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
@@ -177,8 +178,8 @@ async def GetOutfit(Name):
 	print("connecting to database")
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT Outfit FROM stats "" WHERE name = '%s'" % (Name)		
-	cursor.execute(sql)	
+	sql = "SELECT Outfit FROM stats "" WHERE name = '%s'" % (Name)
+	cursor.execute(sql)
 	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
@@ -187,7 +188,7 @@ async def GetOutfit(Name):
 async def GetLoot(Name):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT * FROM %s "" WHERE id = '%s'" % ("stats",1)		
+	sql = "SELECT * FROM %s "" WHERE id = '%s'" % ("stats",1)
 	cursor.execute(sql)
 	output = cursor.fetchall()
 	cnx.commit()
@@ -221,10 +222,9 @@ async def GetUsable(Name):
 	print("connecting to database")
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT Usable FROM stats "" WHERE name = '%s'" % (Name)		
-	cursor.execute(sql)	
+	sql = "SELECT Usable FROM stats "" WHERE name = '%s'" % (Name)
+	cursor.execute(sql)
 	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
 	return output
-

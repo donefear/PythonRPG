@@ -3,6 +3,7 @@ import mysql.connector
 import time
 import random
 import database
+import json
 import configparser
 
 from time import gmtime, strftime
@@ -10,6 +11,55 @@ cdate = strftime("GMT %m/%d/%Y", gmtime())
 config = configparser.ConfigParser()
 config.read(['config.ini', 'persontoken.ini', 'monsters.ini','prices.ini','items.ini'])
 
+with open("items.json", "r") as read_file:
+	items = json.load(read_file)
+
+async def BonusStats(Name):
+	MainHand = await database.GetMainHand(Name)
+	print("MainHand = %s" % MainHand)
+	if MainHand == 0:
+		MainHandHp = 0
+		MainHandStr = 0
+		MainHandInt = 0
+		MainHandDex = 0
+	else:
+		#MainHandHp = int(items['MainHand'][str(MainHand)]['EffectHp'][0])
+		#MainHandStr = int(items['MainHand'][str(MainHand)]['EffectStr'][0])
+		#MainHandInt = int(items['MainHand'][str(MainHand)]['Effectint'][0])
+		#MainHandDex = int(items['MainHand'][str(MainHand)]['EffectDex'][0])
+		print(items['MainHand'][str(MainHand)]['EffectHp'])
+	OffHand = await database.GetOffHand(Name)
+	if OffHand == 0:
+		OffHandHp = 0
+		OffHandStr = 0
+		OffHandInt = 0
+		OffHandDex = 0
+	else:
+		#OffHandHp = int(items['OffHand'][str(OffHand)]['EffectHp'])
+		#OffHandStr = int(items['OffHand'][str(OffHand)]['EffectStr'])
+		#OffHandInt = int(items['OffHand'][str(OffHand)]['Effectint'])
+		#OffHandDex = int(items['OffHand'][str(OffHand)]['EffectDex'])
+		print(items['OffHand'][str(OffHand)]['EffectDex'])
+	Outfit = await database.GetOutfit(Name)
+	# if Outfit not 0:
+	# 	OutfitHp = items['Outfit'][str(Outfit)]['EffectHp']
+	# 	OutfitStr = items['Outfit'][str(Outfit)]['EffectStr']
+	# 	OutfitInt = items['Outfit'][str(Outfit)]['Effectint']
+	# 	OutfitDex = items['Outfit'][str(Outfit)]['EffectDex']
+	# else:
+	# 	OutfitHp = 0
+	# 	OutfitStr = 0
+	# 	OutfitInt = 0
+	# 	OutfitDex = 0
+
+	BonusHp = MainHandHp + OffHandHp
+	BonusStr = MainHandStr + OffHandStr
+	BonusInt = MainHandInt + OffHandInt
+	BonusDex = MainHandDex + OffHandDex
+	BonusStats = [BonusHp,BonusStr,BonusInt,BonusDex]
+	return BonusStats
+
+#battle with mobs
 async def battle(Name,location,channelid,bot):
 	#get info of the player
 	mob = 'potato'
@@ -26,7 +76,12 @@ async def battle(Name,location,channelid,bot):
 			Intel = row[8]
 			Dex = row[9]
 			coins = row[11]
-	
+
+	BonusStats = await BonusStats(Name)#[BonusHp,BonusStr,BonusInt,BonusDex]
+	Hp += BonusStats[0]
+	Str += BonusStats[1]
+	Int += BonusStats[2]
+	Dex += BonusStats[3]
 	#get info of the monster
 	mob = await WeightedDice(location)
 	MonsterName = mob['Name']
@@ -34,8 +89,8 @@ async def battle(Name,location,channelid,bot):
 	MonsterAttack = int(mob['Attack'])
 	MonsterDefence = int(mob['Defence'])
 	MonsterCoins = int(mob['Coins'])
-		
-	
+
+
 	####actual combat
 	await bot.send_message(channelid, "You run into a %s\nand it looks vicious and you're ready for combat" % (MonsterName))
 	PlayerData = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)
@@ -47,7 +102,7 @@ async def battle(Name,location,channelid,bot):
 	msg  = await bot.send_message(channelid, "%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (Name, Hp , MonsterName, MonsterHp))
 	print("HP : %s  HP : %s" % (Hp, MonsterHp))
 	Console(bot,("HP : %s  HP : %s" % (Hp, MonsterHp)))
-	while Hp > 1 and MonsterHp > 1 :	
+	while Hp > 1 and MonsterHp > 1 :
 		print(coinwinner)
 		if coinwinner == 0 :
 			MonsterHp,crit = combat(PlayerData , MonsterData)
@@ -56,7 +111,7 @@ async def battle(Name,location,channelid,bot):
 		else:
 			Hp,crit = combat(MonsterData , PlayerData)
 			coinwinner = 0
-			PlayerData = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)			
+			PlayerData = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)
 		await asyncio.sleep(1)
 		# newHP = round(int(Hp)+0.5)
 		# newMonsterHp = round(int(MonsterHp)+0.5)
@@ -66,7 +121,7 @@ async def battle(Name,location,channelid,bot):
 		winner = MonsterName
 		loser = Name
 		await bot.send_message(channelid,"The winner was @%s" % winner)
-		
+
 	else:
 		#PLAYER WIN
 		winner = Name
@@ -85,7 +140,7 @@ async def duel(message, challenger, target, channelid, bot):
 	else:
 		print(str(challenger) + str(target))
 		print("FIGHT")
-		AttackerData = await database.DownloadFullRecord(challenger, 'stats')	
+		AttackerData = await database.DownloadFullRecord(challenger, 'stats')
 		print(AttackerData)
 		countA = len(AttackerData)
 		for row in AttackerData:
@@ -111,10 +166,10 @@ async def duel(message, challenger, target, channelid, bot):
 			DConst = row[6]
 			DStr = row[7]
 			DIntel = row[8]
-			DDex = row[9]	
+			DDex = row[9]
 		print(countD)
 		DefenderData = (DName, DLevel, DExp, DHp, DMaxHp, DConst, DStr, DIntel, DDex)
-		AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)	
+		AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
 		if countA == 0 :
 			await bot.send_message(channelid," @%s ERROR : No character found please make a character with the '$create' command" % (challenger))
 		elif countD == 0 :
@@ -124,7 +179,7 @@ async def duel(message, challenger, target, channelid, bot):
 			AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
 			await asyncio.sleep(2)
 			if (AIntel+random.randint(1,6)) > (DIntel+random.randint(1,6)):
-				coinwinner = 0 
+				coinwinner = 0
 			else:
 				coinwinner = 1
 			if coinwinner == 0:
@@ -134,7 +189,7 @@ async def duel(message, challenger, target, channelid, bot):
 			msg  = await bot.send_message(channelid, "%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s" % (AName, AHp , DName, DHp))
 			print("AHP : %s  DHP : %s" % (AHp, DHp))
 			Console(bot,("AHP : %s  DHP : %s" % (AHp, DHp)))
-			while AHp > 0 and DHp > 0 :	
+			while AHp > 0 and DHp > 0 :
 				if coinwinner == 0 :
 					DHp,crit = combat(AttackerData , DefenderData)
 					coinwinner = 1
@@ -142,7 +197,7 @@ async def duel(message, challenger, target, channelid, bot):
 				else:
 					AHp,crit = combat(DefenderData , AttackerData)
 					coinwinner = 0
-					AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)	
+					AttackerData = (AName, ALevel, AExp, AHp, AMaxHp, AConst, AStr, AIntel, ADex)
 				if crit == 0:
 					await bot.edit_message(msg,new_content="%s 🗡 Remaining HP : %s \n %s 🛡 Remaining HP : %s " % (AName,AHp , DName, DHp))
 				else:
@@ -204,7 +259,7 @@ async def exp(PlayerName, ExpAmount, PlayerExp, bot, channelid):
 		#async def UpdateField(Name, Table, Field, Value):
 		await database.IncrementFieldByValue(PlayerName, "stats", "Level", LevelsToGive)
 		await levelup(PlayerName, bot, channelid)
-	#deleveling 
+	#deleveling
 	if(PlayerExp < 0) and (PlayerExp != 0):
 		#
 		while(PlayerExp < 0):
@@ -228,13 +283,13 @@ async def exp(PlayerName, ExpAmount, PlayerExp, bot, channelid):
 			LevelsToGive -=1
 			dice = random.randint(1,4)
 			if dice == 1:
-				await database.IncrementFieldByValue(PlayerName, "stats", "Str", -1)		
+				await database.IncrementFieldByValue(PlayerName, "stats", "Str", -1)
 			elif dice == 2:
-				await database.IncrementFieldByValue(PlayerName, "stats", "Const", -1)	
+				await database.IncrementFieldByValue(PlayerName, "stats", "Const", -1)
 			elif dice == 3:
-				await database.IncrementFieldByValue(PlayerName, "stats", "Intel", -1)	
+				await database.IncrementFieldByValue(PlayerName, "stats", "Intel", -1)
 			elif dice == 4:
-				await database.IncrementFieldByValue(PlayerName, "stats", "Dex", -1)				
+				await database.IncrementFieldByValue(PlayerName, "stats", "Dex", -1)
 		await database.IncrementFieldByValue(PlayerName, "stats", "Level", LevelsToGive)
 
 	await database.UpdateField(PlayerName, "stats", "Exp", PlayerExp)
@@ -274,20 +329,20 @@ async def levelup(Playername,bot, channelid):
 				if emoji == "💪":
 					# IncrementFieldByValue(Playername, Table, Field, Value):
 					await database.IncrementFieldByValue(Playername, "stats", "Str", 1)
-					await bot.send_message(channelid, "You have chosen to upgrade your Attack.")		
+					await bot.send_message(channelid, "You have chosen to upgrade your Attack.")
 				elif emoji == "❤":
 					await database.IncrementFieldByValue(Playername, "stats", "Const", 1)
-					await bot.send_message(channelid, "You have chosen to upgrade your constitution.")		
+					await bot.send_message(channelid, "You have chosen to upgrade your constitution.")
 				elif emoji == "🍀":
 					await database.IncrementFieldByValue(Playername, "stats", "Intel", 1)
-					await bot.send_message(channelid, "You have chosen to upgrade your Luck.")		
+					await bot.send_message(channelid, "You have chosen to upgrade your Luck.")
 				elif emoji == "🖐":
 					await database.IncrementFieldByValue(Playername, "stats", "Dex", 1)
-					await bot.send_message(channelid, "You have chosen to upgrade your Defence.")		
+					await bot.send_message(channelid, "You have chosen to upgrade your Defence.")
 
 				await database.IncrementFieldByValue(Playername, "stats", "MaxHP", Const)
 				await database.IncrementFieldByValue(Playername, "stats", "HP", Const)
-				Reactioncheck = False 
+				Reactioncheck = False
 			else:
 				await bot.send_message(channelid,"Sorry you didn't level up so you can't choose a stat")
 				await bot.clear_reactions(message=msg)
@@ -305,7 +360,7 @@ async def Rest(PlayerName):
 		Const = row[6]
 		Str = row[7]
 		Intel = row[8]
-		Dex = row[9]	
+		Dex = row[9]
 	print(count)
 	Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)
 	if count == 0 :
@@ -328,7 +383,7 @@ async def RestStable(PlayerName):
 		Const = row[6]
 		Str = row[7]
 		Intel = row[8]
-		Dex = row[9]	
+		Dex = row[9]
 	print(count)
 	Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)
 	if count == 0 :
@@ -351,7 +406,7 @@ async def Brothel(PlayerName):
 		Const = row[6]
 		Str = row[7]
 		Intel = row[8]
-		Dex = row[9]	
+		Dex = row[9]
 	print(count)
 	Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex)
 	if count == 0 :
@@ -373,15 +428,15 @@ async def Robbed(PlayerName):
 	if purse < 0:
 		purse = 0
 	await database.UpdateField(PlayerName, 'stats', 'coins', purse)
-	return 
+	return
 
 async def Gamble(PlayerName):
 	await bot.send_message(channelid,)
 	UserCoins = await database.GetCoins(PlayerName)
-	return msg 
+	return msg
 
 async def Shop(PlayerName):
-	return msg 
+	return msg
 
 async def Roulette(Playername,Value,Bet):
 	roll = random.randint(0,36)
@@ -407,7 +462,7 @@ async def Roulette(Playername,Value,Bet):
 		print(colour1)
 	output = colour1+str(roll)+num
 	#checking the bet player placed
-	if Value == 37 or Value == 38:		
+	if Value == 37 or Value == 38:
 		if Value == 37:
 			Pick = 'black'
 			print(Pick)
@@ -429,18 +484,18 @@ async def Roulette(Playername,Value,Bet):
 			print(Pick)
 		if num == Pick:
 			Winnings = Bet*2
-			msg = "The wheel slows down and the ball lands on `%s` and double your winnings" % (output) 
+			msg = "The wheel slows down and the ball lands on `%s` and double your winnings" % (output)
 		else:
 			msg = "The wheel slows down and the ball lands on `%s` YOU LOSE" % (output)
-			Winnings -= Bet		
+			Winnings -= Bet
 	elif Value == roll == 0:
 		print(Value)
 		Winnings = Bet*6
-		msg = "The wheel slows down and the ball lands on `%s` and sixtruple your winnings" % (output)		
+		msg = "The wheel slows down and the ball lands on `%s` and sixtruple your winnings" % (output)
 	elif Value == roll:
 		print(Value)
 		Winnings = Bet*4
-		msg = "The wheel slows down and the ball lands on `%s` and quatruple your winnings" % (output) 
+		msg = "The wheel slows down and the ball lands on `%s` and quatruple your winnings" % (output)
 	else:
 		msg = "The wheel slows down and the ball lands on `%s` YOU LOSE" % (output)
 		Winnings -= Bet
@@ -476,11 +531,11 @@ async def WeightedDice(location):
 	area = config['%s' % (location)]
 	moblist = area['monster']
 	WDice = []
-	
+
 	moblistx = len(moblist)
 	for mobs in moblist:
 		weight = 0
-		mob = config['%s%s' % (location , mobs)]	
+		mob = config['%s%s' % (location , mobs)]
 		weight = int(mob['SpawnChance'])
 		x=0
 		while x != weight :
