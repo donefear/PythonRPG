@@ -17,40 +17,23 @@ with open("items.json", "r") as read_file:
 async def BonusStats(Name):
 	MainHand = await database.GetMainHand(Name)
 	print("MainHand = %s" % MainHand)
-	if MainHand == 0:
-		MainHandHp = 0
-		MainHandStr = 0
-		MainHandInt = 0
-		MainHandDex = 0
-	else:
-		#MainHandHp = int(items['MainHand'][str(MainHand)]['EffectHp'][0])
-		#MainHandStr = int(items['MainHand'][str(MainHand)]['EffectStr'][0])
-		#MainHandInt = int(items['MainHand'][str(MainHand)]['Effectint'][0])
-		#MainHandDex = int(items['MainHand'][str(MainHand)]['EffectDex'][0])
-		print("Mainhand.json = %s" % (items['MainHand'][MainHand]['EffectHp']))
+	MainHandHp = int(items['MainHand'][str(MainHand)]['EffectHp'])
+	MainHandStr = int(items['MainHand'][str(MainHand)]['EffectStr'])
+	MainHandInt = int(items['MainHand'][str(MainHand)]['EffectInt'])
+	MainHandDex = int(items['MainHand'][str(MainHand)]['EffectDex'])
+
 	OffHand = await database.GetOffHand(Name)
-	if OffHand == 0:
-		OffHandHp = 0
-		OffHandStr = 0
-		OffHandInt = 0
-		OffHandDex = 0
-	else:
-		#OffHandHp = int(items['OffHand'][str(OffHand)]['EffectHp'])
-		#OffHandStr = int(items['OffHand'][str(OffHand)]['EffectStr'])
-		#OffHandInt = int(items['OffHand'][str(OffHand)]['Effectint'])
-		#OffHandDex = int(items['OffHand'][str(OffHand)]['EffectDex'])
-		print(items['OffHand'][str(OffHand)]['EffectDex'])
-	Outfit = await database.GetOutfit(Name)
-	# if Outfit not 0:
-	# 	OutfitHp = items['Outfit'][str(Outfit)]['EffectHp']
-	# 	OutfitStr = items['Outfit'][str(Outfit)]['EffectStr']
-	# 	OutfitInt = items['Outfit'][str(Outfit)]['Effectint']
-	# 	OutfitDex = items['Outfit'][str(Outfit)]['EffectDex']
-	# else:
-	# 	OutfitHp = 0
-	# 	OutfitStr = 0
-	# 	OutfitInt = 0
-	# 	OutfitDex = 0
+
+	OffHandHp = int(items['OffHand'][str(OffHand)]['EffectHp'])
+	OffHandStr = int(items['OffHand'][str(OffHand)]['EffectStr'])
+	OffHandInt = int(items['OffHand'][str(OffHand)]['EffectInt'])
+	OffHandDex = int(items['OffHand'][str(OffHand)]['EffectDex'])
+	# print(items['OffHand'][str(OffHand)]['EffectDex'])
+	# Outfit = await database.GetOutfit(Name)
+	# OutfitHp = items['Outfit'][str(Outfit)]['EffectHp']
+	# OutfitStr = items['Outfit'][str(Outfit)]['EffectStr']
+	# OutfitInt = items['Outfit'][str(Outfit)]['EffectInt']
+	# OutfitDex = items['Outfit'][str(Outfit)]['EffectDex']
 
 	BonusHp = MainHandHp + OffHandHp
 	BonusStr = MainHandStr + OffHandStr

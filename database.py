@@ -152,38 +152,43 @@ async def IncrementFieldByValue(Name, Table, Field, Value):
 	cnx.close()
 
 async def GetMainHand(Name):
-	print("connecting to database")
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT MainHand FROM stats "" WHERE name = '%s'" % (Name)
+	sql = "SELECT * FROM %s "" WHERE id = '%s'" % ("stats",1)
 	cursor.execute(sql)
 	output = cursor.fetchall()
-	weapon = output[0]
 	cnx.commit()
 	cnx.close()
-	return weapon
+	print(output)
+	for row in output:
+		MainHand = row[12]
+	return MainHand
 
 async def GetOffHand(Name):
-	print("connecting to database")
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT OffHand FROM stats "" WHERE name = '%s'" % (Name)
+	sql = "SELECT * FROM %s "" WHERE id = '%s'" % ("stats",1)
 	cursor.execute(sql)
 	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
-	return output
+	print(output)
+	for row in output:
+		OffHand = row[13]
+	return OffHand
 
 async def GetOutfit(Name):
-	print("connecting to database")
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT Outfit FROM stats "" WHERE name = '%s'" % (Name)
+	sql = "SELECT * FROM %s "" WHERE id = '%s'" % ("stats",1)
 	cursor.execute(sql)
 	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
-	return output
+	print(output)
+	for row in output:
+		Outfit = row[14]
+	return Outfit
 
 async def GetLoot(Name):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
@@ -197,22 +202,7 @@ async def GetLoot(Name):
 	print(output)
 
 	for row in output:
-		ID = row[0]
-		Name = row[1]
-		Level = row[2]
-		Exp = row[3]
-		Hp = row[4]
-		MaxHp = row[5]
-		Const = row[6]
-		Str = row[7]
-		Intel = row[8]
-		Dex = row[9]
-		coins = row[11]
-		MainHand = row[12]
-		OffHand = row[13]
-		Outfit = row[14]
 		Loot = row[16]
-		usables = row[15]
 
 	blup  = Loot.strip("[]")
 	args = blup.split(",")

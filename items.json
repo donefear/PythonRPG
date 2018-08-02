@@ -1,6 +1,16 @@
 {
 	"Name":"list of items",
 	"MainHand": {
+		"0": {
+			"Name":"",
+			"Type":"",
+			"Description":"",
+			"Value":"0",
+			"EffectStr":"0",
+			"EffectDex":"0",
+			"EffectHp":"0",
+			"EffectInt":"0"
+		},
 		"1": {
 			"Name":"Potato",
 			"Type":"Weapon",
@@ -103,6 +113,16 @@
 		}
 	},
 	"OffHand": {
+		"0": {
+			"Name":"",
+			"Type":"",
+			"Description":"",
+			"Value":"0",
+			"EffectStr":"0",
+			"EffectDex":"0",
+			"EffectHp":"0",
+			"EffectInt":"0"
+		},
 		"1": {
 			"Name":"Barrel_Lid",
 			"Type":"Offhand",
@@ -205,6 +225,16 @@
 		}
 	},
 	"Item": {
+		"0": {
+			"Name":"",
+			"Type":"",
+			"Description":"",
+			"Value":"0",
+			"EffectStr":"0",
+			"EffectDex":"0",
+			"EffectHp":"0",
+			"EffectInt":"0"
+		},
 		"1": {
 			"Name":"Healing_Potion",
 			"Type":"Item",
