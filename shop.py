@@ -13,11 +13,11 @@ async def sell(PlayerName, channel, bot):
 	bot.send_message(channel, "What would you like to sell ?")
 	loot = await database.getLoot(PlayerName)
 
-async def InventoryLoot(PlayerName, channel, bot):		
+async def InventoryLoot(PlayerName, channel, bot):
 	loot = await database.GetLoot(PlayerName)
 	print(loot)
 	if len(loot) < 10:
-		x = loot		
+		x = loot
 	if len(loot) > 10:
 		x = loot[0:10]
 		y = loot[10:]
@@ -49,7 +49,7 @@ async def InventoryLoot(PlayerName, channel, bot):
 					if str(emojiuser) == str(PlayerName):
 						if emoji == "➡":
 							description = []
-							for y, option in enumerate(y):
+							for y, option in len(y):
 								description += '\n {} {}'.format(reactions[y], option)
 							embed = discord.Embed(title="Inventory", description=''.join(description))
 							react_message = await bot.send_message(channel, embed=embed)
@@ -64,5 +64,4 @@ async def InventoryLoot(PlayerName, channel, bot):
 							await bot.delete_message(msg2)
 						msg2 = await bot.send_message(message.channel, "@%s you cant go trough someone elses inventory ......:unamused: " % (emojiuser))
 						await bot.clear_reactions(message=msg)
-						await clear(msg2)				
-	
+						await clear(msg2)
