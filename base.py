@@ -13,6 +13,7 @@ import database
 import rndchatcommands
 import AdminCommands
 import shop
+import json
 ############LOADING CONFIG FILES ##################
 config = configparser.ConfigParser()
 config.read(['config.ini', 'persontoken.ini', 'prices.ini'])
@@ -21,6 +22,10 @@ prices = config['Tavern']
 token = DBToken['token']
 Admins = config['Admin']
 AdminList = Admins['adminlist']
+
+
+with open("Quests.json", "r") as read_file:
+	QuestData = json.load(read_file)
 ###################################################
 from time import gmtime, strftime
 cdate = strftime("GMT %m/%d/%Y", gmtime())
@@ -181,15 +186,58 @@ async def on_message(message):
 		await database.UpdateLocation(user,place)
 
 	elif message.content == ("$guide"):
-		await bot.send_message(message.channel, "You walk up to a old but wise looking man \nHe greetz you and welcomes you to this small town \n *Welcom traveler and thank you for coming to help us with the monsters* \n *Be warned the forest is recomended lvl 6-10 and the mountains 10-16* ")
+		user = message.author
+		place = "guide"
+		await database.UpdateLocation(user, place)
+		await bot.send_message(message.channel, "You walk up to a old but wise looking man \nHe greetz you and welcomes you to this small town \n *Welcom traveler and thank you for coming to help us with the monsters* \n *Be warned the forest is recomended lvl 6-10 and the mountains 10-16* \n Use `$getQuest` to see how you could help us.")
+
+	elif message.content == ("$getquest"):
+		Name = message.author
+		location = await database.GetLocation(Name)
+		print(location)
+		if str(location) == "guide":
+			Quest = await database.GetQuest(Name)
+			print('Quest = %s' % Quest)
+			if Quest != "0":
+				print('DEBUG:: !=0')
+				await bot.send_message(message.channel, "You already have a active quest check it with `$Quest`")
+			else:
+				print('DEBUG:: else')
+				Level = await database.GetLevel(Name)
+				if Level in range(1,5):
+					Dice = random.randint(1,3)
+					Quest = "'%s,%s,%s'" % (Dice,QuestData[str(Dice)]["Name"],random.randint(int(QuestData[str(Dice)]["MinRequired"]),int(QuestData[str(Dice)]["MaxRequired"])))
+					print("'q:%s'" % Quest)
+					await database.UpdateField(Name, "stats", "Quest", Quest)
+
+	elif message.content == ("$quest"):
+		Name = message.author
+		Quest = await database.GetQuest(Name)
+		QuestItems = await database.GetQuestItems(Name)
+		if Quest != '0':
+			q = Quest.split(",")
+			RequiredAmount = q[2]
+			QuestName = q[1]
+			QuestId = q[0]
+			print(q)
+			description = QuestData[QuestId]['Description']
+			embed = discord.Embed(title="Active Quest", description=description)
+			embed.add_field(name='Quest :', value=QuestName, inline=True)
+			Process = QuestItems.count(q[0])
+			info = "%s / %s" % (Process,RequiredAmount)
+			embed.add_field(name='Process', value=info, inline=True)
+			await bot.send_message(message.channel, embed=embed)
+		else:
+			await bot.send_message(message.channel, "No active quest go see the `$guide`")
 
 	elif message.content == ("$tavern"):
 		user = message.author
-		await bot.send_message(message.channel, 'Welcome %s how can i help you ?' % (user))
-		await bot.send_message(message.channel, "I could offer you a nice bedroom to `$sleep` , Or if you're not tired, \ndownstairs we have a room to `$gamble` , or maybe the `$brothel` is more your style? \nWe have a fine selection of beautiful women.")
-		await bot.send_message(message.channel, ' To the side of the desk you see a sign saying : Room : %s coins | lady of the night : %s coins' % (prices['sleep'],prices['brothel']))
 		place = "tavern"
 		await database.UpdateLocation(user, place)
+		await bot.send_message(message.channel, 'Welcome %s how can i help you ?' % (user))
+		await bot.send_message(message.channel, "I could offer you a nice bedroom to `$sleep` , Or if you're not tired, \ndownstairs we have a room to `$gamble` , or maybe the `$brothel` is more your style? \nWe have a fine selection of beautiful women.")
+		await bot.send_message(message.channel, 'To the side of the desk you see a sign saying : Room : %s coins | lady of the night : %s coins' % (prices['sleep'],prices['brothel']))
+
 
 	elif message.content == ("$sleep"):
 		user = message.author

@@ -12,14 +12,14 @@
 			"EffectInt":"0"
 		},
 		"1": {
-			"Name":"Potato",
+			"Name":"MagicalPotato",
 			"Type":"Weapon",
 			"Description":"just a random potato what do you think you can do with this ?",
 			"Value":"5",
 			"EffectStr":"1",
 			"EffectDex":"0",
 			"EffectHp":"0",
-			"EffectInt":"0"
+			"EffectInt":"20"
 		},
 		"2": {
 			"Name":"BrokenSword",
@@ -32,9 +32,9 @@
 			"EffectInt":"0"
 		},
 		"3": {
-			"Name":"",
+			"Name":"Dagger",
 			"Type":"Weapon",
-			"Description":"",
+			"Description":"A very short, thick, curved blade made of obsidian is held by a grip wrapped in ordinary, light brown scaled leather.",
 			"Value":"0",
 			"EffectStr":"0",
 			"EffectDex":"0",

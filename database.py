@@ -77,25 +77,28 @@ async def CreateRecord(Name):
 	return msg
 
 async def GetLocation(Name):
-	print("connecting to database")
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT location FROM stats "" WHERE name = '%s'" % (Name)
+	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
 	cursor.execute(sql)
 	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
-	return output
+	print(output)
+	for row in output:
+		Location = row[10]
+	return Location
 
 async def GetCoins(Name):
-	print("connecting to database")
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT coins FROM stats "" WHERE name = '%s'" % (Name)
+	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
 	cursor.execute(sql)
-	coins = cursor.fetchall()
+	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
+	for row in output:
+		coins = row[11]
 	return coins
 
 async def RerollStats(Name, Data):
@@ -154,7 +157,7 @@ async def IncrementFieldByValue(Name, Table, Field, Value):
 async def GetMainHand(Name):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT * FROM %s "" WHERE id = '%s'" % ("stats",1)
+	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
 	cursor.execute(sql)
 	output = cursor.fetchall()
 	cnx.commit()
@@ -167,7 +170,7 @@ async def GetMainHand(Name):
 async def GetOffHand(Name):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT * FROM %s "" WHERE id = '%s'" % ("stats",1)
+	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
 	cursor.execute(sql)
 	output = cursor.fetchall()
 	cnx.commit()
@@ -180,7 +183,7 @@ async def GetOffHand(Name):
 async def GetOutfit(Name):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT * FROM %s "" WHERE id = '%s'" % ("stats",1)
+	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
 	cursor.execute(sql)
 	output = cursor.fetchall()
 	cnx.commit()
@@ -193,7 +196,7 @@ async def GetOutfit(Name):
 async def GetLoot(Name):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT * FROM %s "" WHERE id = '%s'" % ("stats",1)
+	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
 	cursor.execute(sql)
 	output = cursor.fetchall()
 	cnx.commit()
@@ -203,7 +206,6 @@ async def GetLoot(Name):
 
 	for row in output:
 		Loot = row[16]
-
 	blup  = Loot.strip("[]")
 	args = blup.split(",")
 	return args
@@ -218,3 +220,42 @@ async def GetUsable(Name):
 	cnx.commit()
 	cnx.close()
 	return output
+
+async def GetQuest(Name):
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
+	cursor.execute(sql)
+	output = cursor.fetchall()
+	cnx.commit()
+	cnx.close()
+	print(output)
+	for row in output:
+		Quest = row[18]
+	return Quest
+
+async def GetQuestItems(Name):
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
+	cursor.execute(sql)
+	output = cursor.fetchall()
+	cnx.commit()
+	cnx.close()
+	print(output)
+	for row in output:
+		Quest = row[17]
+	return Quest
+
+async def GetLevel(Name):
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
+	cursor.execute(sql)
+	output = cursor.fetchall()
+	cnx.commit()
+	cnx.close()
+	print(output)
+	for row in output:
+		Level = row[2]
+	return Level

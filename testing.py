@@ -44,7 +44,7 @@ for row in output:
 	MainHand = row[12]
 	# OffHand = row[13]
 	# Outfit = row[14]
-	Loot = row[16]
+	Loot = row[16] 
 	# usables = row[15]
 Quest = "tail,5"
 

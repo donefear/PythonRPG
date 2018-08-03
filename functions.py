@@ -14,6 +14,9 @@ config.read(['config.ini', 'persontoken.ini', 'monsters.ini','prices.ini','items
 with open("items.json", "r") as read_file:
 	items = json.load(read_file)
 
+with open("Quests.json", "r") as read_file:
+	QuestData = json.load(read_file)
+
 async def BonusStats(Name):
 	MainHand = await database.GetMainHand(Name)
 	print("MainHand = %s" % MainHand)
@@ -46,6 +49,7 @@ async def BonusStats(Name):
 async def battle(Name,location,channelid,bot):
 	#get info of the player
 	mob = 'potato'
+	Bonus = await BonusStats(Name)
 	UserData = await database.DownloadFullRecord(Name, 'stats')
 	for row in UserData:
 			ID = row[0]
@@ -60,11 +64,12 @@ async def battle(Name,location,channelid,bot):
 			Dex = row[9]
 			coins = row[11]
 
-	BonusStats = await BonusStats(Name)#[BonusHp,BonusStr,BonusInt,BonusDex]
-	Hp += BonusStats[0]
-	Str += BonusStats[1]
-	Int += BonusStats[2]
-	Dex += BonusStats[3]
+
+	#[BonusHp,BonusStr,BonusInt,BonusDex]
+	Hp += Bonus[0]
+	Str += Bonus[1]
+	Intel += Bonus[2]
+	Dex += Bonus[3]
 	#get info of the monster
 	mob = await WeightedDice(location)
 	MonsterName = mob['Name']
@@ -72,6 +77,12 @@ async def battle(Name,location,channelid,bot):
 	MonsterAttack = int(mob['Attack'])
 	MonsterDefence = int(mob['Defence'])
 	MonsterCoins = int(mob['Coins'])
+	MonsterQuestItem = mob['QuestItem']
+	Quest = await database.GetQuest(Name)
+	QuestItems = await database.GetQuestItems(Name)
+	q = Quest.split(",")
+	QuestName = q[1]
+	RequiredAmount = q[2]
 
 
 	####actual combat
@@ -115,6 +126,12 @@ async def battle(Name,location,channelid,bot):
 		winnings = coins + MonsterCoins
 		await database.UpdateField(Name, 'stats', 'coins', winnings)
 		await bot.send_message(channelid,"The winner was @%s\n Gained %s exp , %s gold and now has %s gold in total " % (winner,expgain,MonsterCoins,winnings))
+		if Quest == QuestName :
+			Dice = random.randint(1,5)
+			if Dice == 1 or Dice == 5:
+				QuestItems.append(Quest)
+			if QuestItems.count(Quest) == RequiredAmount:
+				bot.send_message(channelid,"You finished the quest maybe go talk to the guide again.")
 
 
 async def duel(message, challenger, target, channelid, bot):

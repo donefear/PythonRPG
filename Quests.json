@@ -1,0 +1,27 @@
+{
+  "Name":"QuestItem",
+  "1": {
+    "Name":"RatTail",
+    "Description":"Pardon me, traveler. Your assistance is required.\nI'm surrounded by cowards. We were robbed by a group of vermin, they took all they could and killed most of those who tried to stop them. I did what I could, but if everybody helped we would've overpowered them easily. Hero, please retrieve our goods and get rid of those nasty fiends. It'll be dangerous, but I'm willing to come along if you need me to.\nThey'll be no match for you, those fiends.Fortunately I have enough leftto reward you greatly for the efforts you have to go through. Blessed journey champion, may you return swiftly and in one piece.",
+    "MinRequired":"3",
+    "MaxRequired":"15",
+    "Exp":"2",
+    "coins":"1"
+  },
+  "2": {
+    "Name":"DeadLeech",
+    "Description":"Excuse me, traveler. Help out a person in need.\nI have to collect DeadLeeches in the sewer, but I'm afraid i'm stuck here keepign an eye on my cauldron. If you could do some of the harvesting it would be much appreciated.\nI wish I had something better to reward you with, but what I have ain't too bad either.",
+    "MinRequired":"5",
+    "MaxRequired":"20",
+    "Exp":"2",
+    "coins":"1"
+  },
+  "3": {
+    "Name":"SnakeFang",
+    "Description":"Excuse me, adventurer. Please, help me out.\nI've been swamped with customers lately, which is great for business, they seem to want more and more exotic goods. They want snake fangs.\nWould you mind gathering my such Fangs? Those snakes live in the sewer.\nI'll be able to reward you decently, it's nothing fancy, but it'll be worth your while.",
+    "MinRequired":"5",
+    "MaxRequired":"10",
+    "Exp":"2",
+    "coins":"1"
+  }
+}
