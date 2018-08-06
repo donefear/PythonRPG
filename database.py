@@ -119,6 +119,15 @@ async def UpdateField(Name, Table, Field, Value):
 	cnx.commit()
 	cnx.close()
 
+async def UpdateQuestItems(Name,Value):
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = 'UPDATE stats SET QuestItems = "%s" WHERE name = "%s" ' % (Value, Name)
+	print("updating QuestItems with %s" % (Value))
+	cursor.execute(sql)
+	cnx.commit()
+	cnx.close()
+
 async def IncrementFieldByValue(Name, Table, Field, Value):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
@@ -135,7 +144,7 @@ async def GetLevel(Name):
 	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
-	print(output)
+	# print(output)
 	for row in output:
 		Level = row[2]
 	return Level
@@ -148,7 +157,7 @@ async def GetLocation(Name):
 	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
-	print(output)
+	# print(output)
 	for row in output:
 		Location = row[10]
 	return Location
@@ -173,7 +182,7 @@ async def GetMainHand(Name):
 	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
-	print(output)
+	# print(output)
 	for row in output:
 		MainHand = row[12]
 	return MainHand
@@ -186,7 +195,7 @@ async def GetOffHand(Name):
 	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
-	print(output)
+	# print(output)
 	for row in output:
 		OffHand = row[13]
 	return OffHand
@@ -199,7 +208,7 @@ async def GetOutfit(Name):
 	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
-	print(output)
+	# print(output)
 	for row in output:
 		Outfit = row[14]
 	return Outfit
@@ -212,7 +221,7 @@ async def GetUsable(Name):
 	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
-	print(output)
+	# print(output)
 	for row in output:
 		Usable = row[15]
 	return Usable
@@ -225,7 +234,7 @@ async def GetLoot(Name):
 	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
-	print(output)
+	# print(output)
 	for row in output:
 		Loot = row[16]
 	blup  = Loot.strip("[]")
@@ -235,12 +244,12 @@ async def GetLoot(Name):
 async def GetQuestItems(Name):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
-	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
+	sql = "SELECT * FROM stats WHERE name = '%s'" % (Name)
 	cursor.execute(sql)
 	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
-	print(output)
+	# print(output)
 	for row in output:
 		Quest = row[17]
 	return Quest
@@ -253,7 +262,7 @@ async def GetQuest(Name):
 	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
-	print(output)
+	# print(output)
 	for row in output:
 		Quest = row[18]
 	return Quest

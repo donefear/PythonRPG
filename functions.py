@@ -120,17 +120,21 @@ async def battle(Name,location,channelid,bot):
 		#PLAYER WIN
 		winner = Name
 		loser = MonsterName
-		expgain = random.randint(9, 11)
+		expgain = (random.randint(9, 11)+round(Level*1.15))
 		await exp(winner, expgain, Exp, bot, channelid)
 		await database.UpdateField(Name, 'stats', 'Hp', round(Hp+0.5))
 		winnings = coins + MonsterCoins
 		await database.UpdateField(Name, 'stats', 'coins', winnings)
 		await bot.send_message(channelid,"The winner was @%s\n Gained %s exp , %s gold and now has %s gold in total " % (winner,expgain,MonsterCoins,winnings))
-		if Quest == QuestName :
-			Dice = random.randint(1,5)
-			if Dice == 1 or Dice == 5:
-				QuestItems.append(Quest)
-			if QuestItems.count(Quest) == RequiredAmount:
+		print('Quest = %s | QuestName = %s' % (MonsterQuestItem,QuestName))
+		if MonsterQuestItem == QuestName :
+			Dice = random.randint(0,2)
+			print('Dice = %s' % Dice)
+			if Dice == 1 or Dice == 2:
+				print('questitem %s' % QuestItems)
+				QuestItems += "%s," % MonsterQuestItem
+				await database.UpdateQuestItems(Name, QuestItems)
+			if ItemsArray.count(MonsterQuestItem) >= int(RequiredAmount):
 				bot.send_message(channelid,"You finished the quest maybe go talk to the guide again.")
 
 
@@ -247,14 +251,15 @@ def combat(AInfo, DInfo):
 
 async def exp(PlayerName, ExpAmount, PlayerExp, bot, channelid):
 	#Generalized the exp giving code
+	Level = await database.GetLevel(PlayerName)
 	PlayerExp += ExpAmount
 	print(PlayerName)
 	print(str(PlayerExp) + "EXP CURRENTLY")
 	LevelsToGive = 0
-	if(PlayerExp >= 100):
+	if(PlayerExp >= Level*100 ):
 		print("Level Up!")
-		while(PlayerExp >= 100):
-			PlayerExp -= 100
+		while(PlayerExp >= Level*100):
+			PlayerExp -= Level*100
 			LevelsToGive += 1
 		#async def UpdateField(Name, Table, Field, Value):
 		await database.IncrementFieldByValue(PlayerName, "stats", "Level", LevelsToGive)

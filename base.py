@@ -164,7 +164,7 @@ async def on_message(message):
 				Location = row[10]
 				Coins = row[11]
 				# Now print fetched result'💪','❤','🤓','🖐'
-				await bot.send_message(message.channel, "Name = `%s` \nLevel: `%s` Exp: `%s` \nHp: `%s(%s+%s)`      | MaxHp: `%s` \n❤Const: `%s` | 💪Attack: `%s(%s+%s)` \n🍀Luck: `%s(%s+%s)` | 🖐Defence: `%s(%s+%s)`\n🗺Location: `%s`  | 💰Coins: `%s`" % (Name, Level, Exp, Hp+BonusStats[0], Hp, BonusStats[0], MaxHp, Const, Str+BonusStats[1], Str, BonusStats[1], Intel+BonusStats[2], Intel, BonusStats[2], Dex+BonusStats[3], Dex, BonusStats[3], Location , Coins))
+				await bot.send_message(message.channel, "Name = `%s` \nLevel: `%s` Exp: `%s/%s` \nHp: `%s(%s+%s)`      | MaxHp: `%s` \n❤Const: `%s` | 💪Attack: `%s(%s+%s)` \n🍀Luck: `%s(%s+%s)` | 🖐Defence: `%s(%s+%s)`\n🗺Location: `%s`  | 💰Coins: `%s`" % (Name, Level, Exp , Level*100, Hp+BonusStats[0], Hp, BonusStats[0], MaxHp, Const, Str+BonusStats[1], Str, BonusStats[1], Intel+BonusStats[2], Intel, BonusStats[2], Dex+BonusStats[3], Dex, BonusStats[3], Location , Coins))
 
 	elif message.content == ("$exp"):
 		await debug.expdebug(bot, message.channel, message.author)
@@ -192,14 +192,18 @@ async def on_message(message):
 		Quest = await database.GetQuest(user)
 		QuestItems = await database.GetQuestItems(user)
 		q = Quest.split(",")
+		QuestId = q[0]
 		QuestName = q[1]
 		RequiredAmount = q[2]
-		if QuestItems.count(Quest) == RequiredAmount:
-			gold = (int(QuestData[QuestName]['coins']) * int(RequiredAmount))
-			exp = (int(QuestData[QuestName]['Exp']) * int(RequiredAmount))
-			bot.send_message(channelid,"Thank you traveler!!\n *the guide hands you soem gold* here for your help it aint much but i hope it helps some.")
+		ItemsArray = QuestItems.split(',')
+		if ItemsArray.count(QuestName) >= int(RequiredAmount):
+			gold = (int(QuestData[QuestId]['coins']) * int(RequiredAmount))
+			exp = (int(QuestData[QuestId]['Exp']) * int(RequiredAmount))
+			await bot.send_message(message.channel, "Thank you traveler!!\n *the guide hands you soem gold* here for your help it aint much but i hope it helps some.")
 			await database.IncrementFieldByValue(user, 'stats', 'Exp', exp)
 			await database.IncrementFieldByValue(user, 'stats', 'coins', gold)
+			await database.UpdateQuestItems(user,"")
+			await database.UpdateField(user, 'stats', 'Quest', '0')
 		else:
 			await bot.send_message(message.channel, "You walk up to a old but wise looking man \nHe greetz you and welcomes you to this small town \n *Welcome traveler and thank you for coming to help us with the monsters* \n *Be warned the forest is recomended lvl 6-10 and the mountains 10-16* \n Use `$getQuest` to see how you could help us.")
 
@@ -232,10 +236,12 @@ async def on_message(message):
 			QuestName = q[1]
 			QuestId = q[0]
 			print(q)
+			ItemsArray = QuestItems.split(',')
 			description = QuestData[QuestId]['Description']
 			embed = discord.Embed(title="Active Quest", description=description)
 			embed.add_field(name='Quest :', value=QuestName, inline=True)
-			Process = QuestItems.count(q[0])
+			print('DEBUG ln 238 count %s | %s' % (QuestName,ItemsArray))
+			Process = ItemsArray.count(QuestName)
 			info = "%s / %s" % (Process,RequiredAmount)
 			embed.add_field(name='Process', value=info, inline=True)
 			await bot.send_message(message.channel, embed=embed)
