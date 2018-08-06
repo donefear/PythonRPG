@@ -189,7 +189,19 @@ async def on_message(message):
 		user = message.author
 		place = "guide"
 		await database.UpdateLocation(user, place)
-		await bot.send_message(message.channel, "You walk up to a old but wise looking man \nHe greetz you and welcomes you to this small town \n *Welcom traveler and thank you for coming to help us with the monsters* \n *Be warned the forest is recomended lvl 6-10 and the mountains 10-16* \n Use `$getQuest` to see how you could help us.")
+		Quest = await database.GetQuest(user)
+		QuestItems = await database.GetQuestItems(user)
+		q = Quest.split(",")
+		QuestName = q[1]
+		RequiredAmount = q[2]
+		if QuestItems.count(Quest) == RequiredAmount:
+			gold = (int(QuestData[QuestName]['coins']) * int(RequiredAmount))
+			exp = (int(QuestData[QuestName]['Exp']) * int(RequiredAmount))
+			bot.send_message(channelid,"Thank you traveler!!\n *the guide hands you soem gold* here for your help it aint much but i hope it helps some.")
+			await database.IncrementFieldByValue(user, 'stats', 'Exp', exp)
+			await database.IncrementFieldByValue(user, 'stats', 'coins', gold)
+		else:
+			await bot.send_message(message.channel, "You walk up to a old but wise looking man \nHe greetz you and welcomes you to this small town \n *Welcome traveler and thank you for coming to help us with the monsters* \n *Be warned the forest is recomended lvl 6-10 and the mountains 10-16* \n Use `$getQuest` to see how you could help us.")
 
 	elif message.content == ("$getquest"):
 		Name = message.author

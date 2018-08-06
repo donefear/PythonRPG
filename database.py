@@ -76,31 +76,6 @@ async def CreateRecord(Name):
 	cnx.close()
 	return msg
 
-async def GetLocation(Name):
-	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
-	cursor = cnx.cursor()
-	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
-	cursor.execute(sql)
-	output = cursor.fetchall()
-	cnx.commit()
-	cnx.close()
-	print(output)
-	for row in output:
-		Location = row[10]
-	return Location
-
-async def GetCoins(Name):
-	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
-	cursor = cnx.cursor()
-	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
-	cursor.execute(sql)
-	output = cursor.fetchall()
-	cnx.commit()
-	cnx.close()
-	for row in output:
-		coins = row[11]
-	return coins
-
 async def RerollStats(Name, Data):
 	Data = (Name, Level, Exp, Hp, MaxHp, Const, Str, Intel, Dex, 10)
 	for row in output:
@@ -115,8 +90,6 @@ async def RerollStats(Name, Data):
 		Dex = row[9]
 		location = row[10]
 		coins = row[11]
-
-
 
 async def DownloadFullRecord(Name, Table):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
@@ -153,6 +126,44 @@ async def IncrementFieldByValue(Name, Table, Field, Value):
 	cursor.execute(sql)
 	cnx.commit()
 	cnx.close()
+
+async def GetLevel(Name):
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
+	cursor.execute(sql)
+	output = cursor.fetchall()
+	cnx.commit()
+	cnx.close()
+	print(output)
+	for row in output:
+		Level = row[2]
+	return Level
+
+async def GetLocation(Name):
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
+	cursor.execute(sql)
+	output = cursor.fetchall()
+	cnx.commit()
+	cnx.close()
+	print(output)
+	for row in output:
+		Location = row[10]
+	return Location
+
+async def GetCoins(Name):
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
+	cursor.execute(sql)
+	output = cursor.fetchall()
+	cnx.commit()
+	cnx.close()
+	for row in output:
+		coins = row[11]
+	return coins
 
 async def GetMainHand(Name):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
@@ -193,6 +204,19 @@ async def GetOutfit(Name):
 		Outfit = row[14]
 	return Outfit
 
+async def GetUsable(Name):
+	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
+	cursor = cnx.cursor()
+	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
+	cursor.execute(sql)
+	output = cursor.fetchall()
+	cnx.commit()
+	cnx.close()
+	print(output)
+	for row in output:
+		Usable = row[15]
+	return Usable
+
 async def GetLoot(Name):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
@@ -201,38 +225,12 @@ async def GetLoot(Name):
 	output = cursor.fetchall()
 	cnx.commit()
 	cnx.close()
-
 	print(output)
-
 	for row in output:
 		Loot = row[16]
 	blup  = Loot.strip("[]")
 	args = blup.split(",")
 	return args
-
-async def GetUsable(Name):
-	print("connecting to database")
-	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
-	cursor = cnx.cursor()
-	sql = "SELECT Usable FROM stats "" WHERE name = '%s'" % (Name)
-	cursor.execute(sql)
-	output = cursor.fetchall()
-	cnx.commit()
-	cnx.close()
-	return output
-
-async def GetQuest(Name):
-	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
-	cursor = cnx.cursor()
-	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
-	cursor.execute(sql)
-	output = cursor.fetchall()
-	cnx.commit()
-	cnx.close()
-	print(output)
-	for row in output:
-		Quest = row[18]
-	return Quest
 
 async def GetQuestItems(Name):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
@@ -247,7 +245,7 @@ async def GetQuestItems(Name):
 		Quest = row[17]
 	return Quest
 
-async def GetLevel(Name):
+async def GetQuest(Name):
 	cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 	cursor = cnx.cursor()
 	sql = "SELECT * FROM stats "" WHERE name = '%s'" % (Name)
@@ -257,5 +255,5 @@ async def GetLevel(Name):
 	cnx.close()
 	print(output)
 	for row in output:
-		Level = row[2]
-	return Level
+		Quest = row[18]
+	return Quest

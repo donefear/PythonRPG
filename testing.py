@@ -25,8 +25,8 @@ sql = "SELECT * FROM %s "" WHERE id = '%s'" % ("stats",1)
 cursor.execute(sql)
 output = cursor.fetchall()
 cnx.commit()
-cnx.close()
-
+# cnx.close()
+# ['SnakeFang','SnakeFang','SnakeFang','SnakeFang','SnakeFang','SnakeFang','SnakeFang','SnakeFang','SnakeFang']
 print(output)
 
 for row in output:
@@ -40,12 +40,15 @@ for row in output:
 	# Str = row[7]
 	# Intel = row[8]
 	# Dex = row[9]
+	# location = row[10]
 	# coins = row[11]
 	MainHand = row[12]
 	# OffHand = row[13]
 	# Outfit = row[14]
-	Loot = row[16] 
 	# usables = row[15]
+	Loot = row[16]
+	# QuestItems = row[17]
+	# Quest = row[18]
 Quest = "tail,5"
 
 q = Quest.split(",")
