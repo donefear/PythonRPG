@@ -80,9 +80,13 @@ async def battle(Name,location,channelid,bot):
 	MonsterQuestItem = mob['QuestItem']
 	Quest = await database.GetQuest(Name)
 	QuestItems = await database.GetQuestItems(Name)
-	q = Quest.split(",")
-	QuestName = q[1]
-	RequiredAmount = q[2]
+	if Quest != "0":
+		q = Quest.split(",")
+		QuestName = q[1]
+		RequiredAmount = q[2]
+	else:
+		QuestName = "NULL"
+		RequiredAmount = 0
 
 
 	####actual combat

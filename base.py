@@ -190,20 +190,21 @@ async def on_message(message):
 		place = "guide"
 		await database.UpdateLocation(user, place)
 		Quest = await database.GetQuest(user)
-		QuestItems = await database.GetQuestItems(user)
-		q = Quest.split(",")
-		QuestId = q[0]
-		QuestName = q[1]
-		RequiredAmount = q[2]
-		ItemsArray = QuestItems.split(',')
-		if ItemsArray.count(QuestName) >= int(RequiredAmount):
-			gold = (int(QuestData[QuestId]['coins']) * int(RequiredAmount))
-			exp = (int(QuestData[QuestId]['Exp']) * int(RequiredAmount))
-			await bot.send_message(message.channel, "Thank you traveler!!\n *the guide hands you soem gold* here for your help it aint much but i hope it helps some.")
-			await database.IncrementFieldByValue(user, 'stats', 'Exp', exp)
-			await database.IncrementFieldByValue(user, 'stats', 'coins', gold)
-			await database.UpdateQuestItems(user,"")
-			await database.UpdateField(user, 'stats', 'Quest', '0')
+		if Quest !="0":
+			QuestItems = await database.GetQuestItems(user)
+			q = Quest.split(",")
+			QuestId = q[0]
+			QuestName = q[1]
+			RequiredAmount = q[2]
+			ItemsArray = QuestItems.split(',')
+			if ItemsArray.count(QuestName) >= int(RequiredAmount):
+				gold = (int(QuestData[QuestId]['coins']) * int(RequiredAmount))
+				exp = (int(QuestData[QuestId]['Exp']) * int(RequiredAmount))
+				await bot.send_message(message.channel, "Thank you traveler!!\n *the guide hands you soem gold* here for your help it aint much but i hope it helps some.")
+				await database.IncrementFieldByValue(user, 'stats', 'Exp', exp)
+				await database.IncrementFieldByValue(user, 'stats', 'coins', gold)
+				await database.UpdateQuestItems(user,"")
+				await database.UpdateField(user, 'stats', 'Quest', '0')
 		else:
 			await bot.send_message(message.channel, "You walk up to a old but wise looking man \nHe greetz you and welcomes you to this small town \n *Welcome traveler and thank you for coming to help us with the monsters* \n *Be warned the forest is recomended lvl 6-10 and the mountains 10-16* \n Use `$getQuest` to see how you could help us.")
 

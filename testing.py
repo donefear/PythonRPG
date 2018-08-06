@@ -19,15 +19,44 @@ with open("items.json", "r") as read_file:
 # the result is a Python dictionary:
 #
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 cnx = mysql.connector.connect(user=token_user, password=token_password,database=token_database,host=token_host)
 cursor = cnx.cursor()
 sql = "SELECT * FROM %s "" WHERE id = '%s'" % ("stats",1)
 cursor.execute(sql)
 output = cursor.fetchall()
 cnx.commit()
-# cnx.close()
+cnx.close()
 # ['SnakeFang','SnakeFang','SnakeFang','SnakeFang','SnakeFang','SnakeFang','SnakeFang','SnakeFang','SnakeFang']
 print(output)
+
+# QuestItems.append(QuestName)
+# print('Gained a questitem %s' % QuestItems)
+# blup = '%s' % QuestItems
+# await database.UpdateField(Name, 'stats', 'QuestItems', blup)
 
 for row in output:
 	# ID = row[0]
