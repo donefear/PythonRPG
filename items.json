@@ -36,40 +36,40 @@
 			"Type":"Weapon",
 			"Description":"A very short, thick, curved blade made of obsidian is held by a grip wrapped in ordinary, light brown scaled leather.",
 			"Value":"0",
-			"EffectStr":"0",
+			"EffectStr":"1",
 			"EffectDex":"0",
 			"EffectHp":"0",
-			"EffectInt":"0"
+			"EffectInt":"3"
 		},
 		"4": {
-			"Name":"",
+			"Name":"Shortsword",
 			"Type":"Weapon",
-			"Description":"",
-			"Value":"0",
-			"EffectStr":"0",
-			"EffectDex":"0",
+			"Description":"A short sword. Used for close range stabbing.",
+			"Value":"20",
+			"EffectStr":"5",
+			"EffectDex":"2",
 			"EffectHp":"0",
 			"EffectInt":"0"
 		},
 		"5": {
-			"Name":"",
+			"Name":"Longsword",
 			"Type":"Weapon",
-			"Description":"",
-			"Value":"0",
-			"EffectStr":"0",
-			"EffectDex":"0",
+			"Description":"A longer sword, used for slashing at a distance.",
+			"Value":"30",
+			"EffectStr":"10",
+			"EffectDex":"4",
 			"EffectHp":"0",
 			"EffectInt":"0"
 		},
 		"6": {
-			"Name":"",
+			"Name":"Dercius' Blade",
 			"Type":"Weapon",
-			"Description":"",
-			"Value":"0",
-			"EffectStr":"0",
-			"EffectDex":"0",
-			"EffectHp":"0",
-			"EffectInt":"0"
+			"Description":"Only for Dercius.",
+			"Value":"1000000",
+			"EffectStr":"100",
+			"EffectDex":"100",
+			"EffectHp":"100",
+			"EffectInt":"100"
 		},
 		"7": {
 			"Name":"",
@@ -126,7 +126,7 @@
 		"1": {
 			"Name":"Barrel_Lid",
 			"Type":"Offhand",
-			"Description":"Some lid you stole from a barrel gues it could function as a shield",
+			"Description":"Some lid you stole from a barrel gues it could function as a shield.",
 			"Value":"10",
 			"EffectStr":"0",
 			"EffectDex":"0",
@@ -134,22 +134,22 @@
 			"EffectInt":"0"
 		},
 		"2": {
-			"Name":"",
+			"Name":"Tower Shield",
 			"Type":"OffHand",
-			"Description":"",
-			"Value":"0",
-			"EffectStr":"0",
-			"EffectDex":"0",
-			"EffectHp":"0",
-			"EffectInt":"0"
+			"Description":"A large shield made of plate steel, its very heavy and cumbersome.",
+			"Value":"100",
+			"EffectStr":"-2",
+			"EffectDex":"10",
+			"EffectHp":"5",
+			"EffectInt":""
 		},
 		"3": {
-			"Name":"",
+			"Name":"Buckler",
 			"Type":"OffHand",
-			"Description":"",
-			"Value":"0",
+			"Description":"A small round shield, studded with spikes.",
+			"Value":"50",
 			"EffectStr":"0",
-			"EffectDex":"0",
+			"EffectDex":"20",
 			"EffectHp":"0",
 			"EffectInt":"0"
 		},
