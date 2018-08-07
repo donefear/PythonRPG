@@ -67,30 +67,32 @@ async def InventoryLoot(PlayerName, channel, bot):
 						await clear(msg2)
 
 async def BuySell(Name, Slot, Item, channel, bot):
-	Value = items[Slot][item]['Value']
-	ItemName = items[Slot][item]['Name']
+	print("Name : %s , Slot : %s , Item : %s" % (Name,Slot,Item))
+	Value = items[Slot][Item]['Value']
+	ItemName = items[Slot][Item]['Name']
+	print('item = %s' % ItemName)
 	if Slot == "MainHand":
 		PlayerItem = await database.GetMainHand(Name)
-	elif Slot == "Offhand":
+	elif Slot == "OffHand":
 		PlayerItem = await database.GetOffHand(Name)
 
 	if int(PlayerItem) == 0:
-		coins = database.GetCoins(Name)
-		if coins < Value :
+		coins = await database.GetCoins(Name)
+		if int(coins) < int(Value) :
 			await bot.send_message(channel, "You can't afford this.")
 		else:
 			await bot.send_message(channel, "Bought %s for %s" % (ItemName, Value))
-			purse = coins - Value
-			database.UpdateField(Name, 'stats', 'coins', purse)
+			purse = int(coins) - int(Value)
+			await database.UpdateField(Name, 'stats', 'coins', purse)
 			await database.UpdateField(Name, 'stats', Slot, Item)
 	else:
 		coins = database.GetCoins(Name)
-		if coins < Value :
+		if int(coins) < int(Value) :
 			await bot.send_message(channel, "You can't afford this.")
 		else:
 			PlayerItemValue = items[Slot][Playeritem]['Value']
 			await bot.send_message(channel, "Bought %s for %s\n and sold %s for %s" % (ItemName, Value, PlayerItem, PlayerItemValue))
-			purse = coins - Value + (PlayeritemValue*0.75)
+			purse = int(coins) - int(Value) + (int(PlayeritemValue)*0.75)
 			database.UpdateField(Name, 'stats', 'coins', purse)
 			await database.UpdateField(Name, 'stats', Slot, Item)
 
@@ -124,41 +126,59 @@ async def BlackSmith(Name, channel, bot):
 			description = []
 			for x, option in enumerate(Items):
 				print(items[list][str(x)]['Name'])
-				description += '\n {} {}'.format(reactions[x], items[list][str(Items[x])]['Name'])
+				# '💪','❤','🤓','🖐'
+				description += '\n {} __{}__ \n(Attack:{},Hp:{},Luck:{},Deffence:{})'.format(reactions[x], items[list][str(Items[x])]['Name'], items[list][str(Items[x])]['EffectStr'], items[list][str(Items[x])]['EffectHp'], items[list][str(Items[x])]['EffectInt'], items[list][str(Items[x])]['EffectDex'])
 			embed = discord.Embed(title=list, description=''.join(description))
 			react_message = await bot.send_message(channel, embed=embed)
 			for reaction in reactions[:len(Items)]:
 				await bot.add_reaction(react_message, reaction)
 			await bot.edit_message(react_message, embed=embed)
-			react = await bot.wait_for_reaction(message=react_message, check=shop)
-			shopitem = "{0.reaction.emoji}".format(res)
-			shopuser = "{0.user}".format(res)
-			print(shopitem)
-			for n in range(100):
+			for m in range(100):
 				def shop(reaction, user):
 					e = str(reaction.emoji)
 					return e.startswith(('1⃣', '2⃣', '3⃣', '4⃣', '5⃣', '6⃣', '7⃣', '8⃣', '9⃣', '🔟'))
-				shopemoji = "{0.reaction.emoji}".format(res)
-				shopuser = "{0.user}".format(res)
-				if str(emojiuser) == str(Name):
+				react = await bot.wait_for_reaction(message=react_message, check=shop)
+				shopemoji = "{0.reaction.emoji}".format(react)
+				shopuser = "{0.user}".format(react)
+				if str(shopuser) == str(Name):
+					prop = "0"
 					if shopemoji == "1⃣":
+						print("%s + 1" % shopemoji)
 						prop = "1"
+						await BuySell(Name, list, prop, channel, bot)
 					elif shopemoji == '2⃣':
+						print("%s + 2" % shopemoji)
 						prop = "2"
+						await BuySell(Name, list, prop, channel, bot)
 					elif shopemoji == '3⃣':
+						print("%s + 3" % shopemoji)
 						prop = "3"
+						await BuySell(Name, list, prop, channel, bot)
 					elif shopemoji == '4⃣':
+						print("%s + 4" % shopemoji)
 						prop = "4"
+						await BuySell(Name, list, prop, channel, bot)
 					elif shopemoji == '5⃣':
+						print("%s + 5" % shopemoji)
 						prop = "5"
+						await BuySell(Name, list, prop, channel, bot)
 					elif shopemoji == '6⃣':
+						print("%s + 6" % shopemoji)
 						prop = "6"
+						await BuySell(Name, list, prop, channel, bot)
 					elif shopemoji == '7⃣':
+						print("%s + 7" % shopemoji)
 						prop = "7"
+						await BuySell(Name, list, prop, channel, bot)
 					elif shopemoji == '8⃣':
+						print("%s + 8" % shopemoji)
 						prop = "8"
+						await BuySell(Name, list, prop, channel, bot)
 					elif shopemoji == '9⃣':
+						print("%s + 9" % shopemoji)
 						prop = "9"
+						await BuySell(Name, list, prop, channel, bot)
 					elif shopemoji == '🔟':
+						print("%s + 10" % shopemoji)
 						prop = "10"
-					BuySell(Name, list, prop, channel, bot)
+						await BuySell(Name, list, prop, channel, bot)

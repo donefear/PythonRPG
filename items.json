@@ -124,7 +124,7 @@
 			"EffectInt":"0"
 		},
 		"1": {
-			"Name":"Barrel Lid",
+			"Name":"Barrel_Lid",
 			"Type":"Offhand",
 			"Description":"Some lid you stole from a barrel gues it could function as a shield.",
 			"Value":"10",
@@ -134,14 +134,14 @@
 			"EffectInt":"0"
 		},
 		"2": {
-			"Name":"Tower Shield",
+			"Name":"Tower_Shield",
 			"Type":"OffHand",
 			"Description":"A large shield made of plate steel, its very heavy and cumbersome.",
 			"Value":"100",
 			"EffectStr":"-2",
 			"EffectDex":"10",
 			"EffectHp":"5",
-			"EffectInt":""
+			"EffectInt":"0"
 		},
 		"3": {
 			"Name":"Buckler",

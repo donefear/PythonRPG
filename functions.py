@@ -26,7 +26,7 @@ async def BonusStats(Name):
 	MainHandDex = int(items['MainHand'][str(MainHand)]['EffectDex'])
 
 	OffHand = await database.GetOffHand(Name)
-
+	print("OffHand = %s" % OffHand)
 	OffHandHp = int(items['OffHand'][str(OffHand)]['EffectHp'])
 	OffHandStr = int(items['OffHand'][str(OffHand)]['EffectStr'])
 	OffHandInt = int(items['OffHand'][str(OffHand)]['EffectInt'])
