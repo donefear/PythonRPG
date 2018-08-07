@@ -124,7 +124,7 @@
 			"EffectInt":"0"
 		},
 		"1": {
-			"Name":"Barrel_Lid",
+			"Name":"Barrel Lid",
 			"Type":"Offhand",
 			"Description":"Some lid you stole from a barrel gues it could function as a shield.",
 			"Value":"10",

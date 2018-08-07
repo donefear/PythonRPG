@@ -208,26 +208,26 @@ async def on_message(message):
 		else:
 			await bot.send_message(message.channel, "You walk up to a old but wise looking man \nHe greetz you and welcomes you to this small town \n *Welcome traveler and thank you for coming to help us with the monsters* \n *Be warned the forest is recomended lvl 6-10 and the mountains 10-16* \n Use `$getQuest` to see how you could help us.")
 
-	elif message.content == ("$getquest"):
+	elif message.content == "$getquest" or message.content == "$getQuest" or message.content == "$GetQuest":
 		Name = message.author
 		location = await database.GetLocation(Name)
 		print(location)
 		if str(location) == "guide":
 			Quest = await database.GetQuest(Name)
 			print('Quest = %s' % Quest)
-			if Quest != "0":
+			if str(Quest) != "0":
 				print('DEBUG:: !=0')
 				await bot.send_message(message.channel, "You already have a active quest check it with `$Quest`")
 			else:
 				print('DEBUG:: else')
 				Level = await database.GetLevel(Name)
-				if Level in range(1,5):
-					Dice = random.randint(1,3)
-					Quest = "'%s,%s,%s'" % (Dice,QuestData[str(Dice)]["Name"],random.randint(int(QuestData[str(Dice)]["MinRequired"]),int(QuestData[str(Dice)]["MaxRequired"])))
-					print("'q:%s'" % Quest)
-					await database.UpdateField(Name, "stats", "Quest", Quest)
+				# if Level in range(1,5):
+				Dice = random.randint(1,3)
+				Quest = "'%s,%s,%s'" % (Dice,QuestData[str(Dice)]["Name"],random.randint(int(QuestData[str(Dice)]["MinRequired"]),int(QuestData[str(Dice)]["MaxRequired"])))
+				print("'q:%s'" % Quest)
+				await database.UpdateField(Name, "stats", "Quest", Quest)
 
-	elif message.content == ("$quest"):
+	elif message.content == ("$quest")or message.content == "$Quest":
 		Name = message.author
 		Quest = await database.GetQuest(Name)
 		QuestItems = await database.GetQuestItems(Name)
@@ -398,12 +398,15 @@ async def on_message(message):
 			await bot.send_message(message.channel, "There is no roulette table here....")
 
 	elif message.content == ("$shop"):
+		Name = message.author
 		await bot.send_message(message.channel, "🚧🚧🚧UNDER CONSTRUCTION🚧🚧🚧" )
-		user = message.author
+
 
 	elif message.content == ("$blacksmith"):
 		await bot.send_message(message.channel, "🚧🚧🚧UNDER CONSTRUCTION🚧🚧🚧" )
-		user = message.author
+		Name = message.author
+		print("DEBUGG")
+		await shop.BlackSmith(Name, message.channel, bot)
 
 	elif message.content == ("$sewer"):
 		user = message.author
