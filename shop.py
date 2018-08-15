@@ -127,7 +127,7 @@ async def BlackSmith(Name, channel, bot):
 			for x, option in enumerate(Items):
 				print(items[list][str(x)]['Name'])
 				# '💪','❤','🤓','🖐'
-				description += '\n {} __{}__ \n(Attack:{},Hp:{},Luck:{},Deffence:{})'.format(reactions[x], items[list][str(Items[x])]['Name'], items[list][str(Items[x])]['EffectStr'], items[list][str(Items[x])]['EffectHp'], items[list][str(Items[x])]['EffectInt'], items[list][str(Items[x])]['EffectDex'])
+				description += '\n {} __{}__ \n(Price: {}, Attack:{},Hp:{},Luck:{},Deffence:{})'.format(reactions[x],items[list][str(Items[x])]['Name'],  items[list][str(Items[x])]['Value'],items[list][str(Items[x])]['EffectStr'], items[list][str(Items[x])]['EffectHp'], items[list][str(Items[x])]['EffectInt'], items[list][str(Items[x])]['EffectDex'])
 			embed = discord.Embed(title=list, description=''.join(description))
 			react_message = await bot.send_message(channel, embed=embed)
 			for reaction in reactions[:len(Items)]:
