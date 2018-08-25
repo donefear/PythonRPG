@@ -138,8 +138,9 @@ async def battle(Name,location,channelid,bot):
 				print('questitem %s' % QuestItems)
 				QuestItems += "%s," % MonsterQuestItem
 				await database.UpdateQuestItems(Name, QuestItems)
-			if ItemsArray.count(MonsterQuestItem) >= int(RequiredAmount):
-				bot.send_message(channelid,"You finished the quest maybe go talk to the guide again.")
+				ItemsArray = QuestItems.split(',')
+				if ItemsArray.count(MonsterQuestItem) >= int(RequiredAmount):
+					bot.send_message(channelid,"You finished the quest maybe go talk to the guide again.")
 
 
 async def duel(message, challenger, target, channelid, bot):

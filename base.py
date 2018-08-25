@@ -190,6 +190,7 @@ async def on_message(message):
 		place = "guide"
 		await database.UpdateLocation(user, place)
 		Quest = await database.GetQuest(user)
+		await bot.send_message(message.channel, "You walk up to a old but wise looking man \nHe greetz you and welcomes you to this small town \n *Welcome traveler and thank you for coming to help us with the monsters* \n *Be warned the forest is recomended lvl 6-10 and the mountains 10-16* \n Use `$getQuest` to see how you could help us.")
 		if Quest !="0":
 			QuestItems = await database.GetQuestItems(user)
 			q = Quest.split(",")
@@ -205,8 +206,7 @@ async def on_message(message):
 				await database.IncrementFieldByValue(user, 'stats', 'coins', gold)
 				await database.UpdateQuestItems(user,"")
 				await database.UpdateField(user, 'stats', 'Quest', '0')
-		else:
-			await bot.send_message(message.channel, "You walk up to a old but wise looking man \nHe greetz you and welcomes you to this small town \n *Welcome traveler and thank you for coming to help us with the monsters* \n *Be warned the forest is recomended lvl 6-10 and the mountains 10-16* \n Use `$getQuest` to see how you could help us.")
+
 
 	elif message.content == "$getquest" or message.content == "$getQuest" or message.content == "$GetQuest":
 		Name = message.author
